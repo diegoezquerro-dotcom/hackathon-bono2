@@ -1,0 +1,22 @@
+@import url('https://fonts.bunny.net/css?family=lufga:400,500,600,700');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lufga', sans-serif;
+  background: #0a0a0a;
+  color: #F1F1F1;
+  min-height: 100vh;
+}
+
+:root {
+  --morado-oscuro: #3001F7;
+  --morado-claro: #7243FD;
+  --gris: #F1F1F1;
+  --negro: #000000;
+  --gradiente: linear-gradient(135deg, #3001F7, #7243FD);
+}
