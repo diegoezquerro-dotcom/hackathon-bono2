@@ -18,12 +18,11 @@ function Calculadora() {
   const [input, setInput] = useState("")
   const [preguntaActual, setPreguntaActual] = useState(0)
   const [respuestas, setRespuestas] = useState({})
-  const [fase, setFase] = useState("inicio") // inicio, preguntas, muro, resultado
+  const [fase, setFase] = useState("inicio")
 
   const enviarMensaje = () => {
     if (!input.trim()) return
 
-    // agrega mensaje del usuario
     const nuevosMensajes = [...mensajes, { tipo: "usuario", texto: input }]
 
     if (fase === "inicio") {
@@ -37,14 +36,19 @@ function Calculadora() {
       setRespuestas(nuevasRespuestas)
 
       if (preguntaActual + 1 < preguntas.length) {
-        // siguiente pregunta
         setMensajes([...nuevosMensajes, { tipo: "bot", texto: preguntas[preguntaActual + 1].texto }])
         setPreguntaActual(preguntaActual + 1)
       } else {
-        // terminaron las preguntas
         setFase("muro")
         setMensajes([...nuevosMensajes, { tipo: "bot", texto: "¡Listo! Ya tengo todo lo que necesito. Escribe tu nombre para ver tu resultado 🌱" }])
       }
+
+    } else if (fase === "muro") {
+      setFase("resultado")
+      setMensajes([...nuevosMensajes, {
+        tipo: "bot",
+        texto: `Gracias ${input}! 🎉 Calculando tu huella de carbono...`
+      }])
     }
 
     setInput("")
@@ -55,25 +59,46 @@ function Calculadora() {
   }
 
   return (
-    <div>
-      <h2>Calculadora de Huella de Carbono</h2>
+    <div className="app">
 
-      <div>
-        {mensajes.map((msg, i) => (
-          <div key={i}>
-            <strong>{msg.tipo === "bot" ? "Bono" : "Tú"}:</strong> {msg.texto}
-          </div>
-        ))}
+      {/* header */}
+      <div className="header">
+        <div>
+          <div className="logo-texto">bono₂</div>
+          <div className="tagline">cutting emissions</div>
+        </div>
       </div>
 
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Escribe tu respuesta..."
-      />
-      <button onClick={enviarMensaje}>Enviar</button>
+      {/* chat */}
+      <div className="chat-container">
+        <div className="mensajes">
+          {mensajes.map((msg, i) => (
+            <div key={i} style={{ alignSelf: msg.tipo === "bot" ? "flex-start" : "flex-end" }}>
+              <div className="remitente">
+                {msg.tipo === "bot" ? "Bono" : "Tú"}
+              </div>
+              <div className={`burbuja ${msg.tipo === "bot" ? "burbuja-bot" : "burbuja-usuario"}`}>
+                {msg.texto}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="input-area">
+          <input
+            className="input-texto"
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Escribe tu respuesta..."
+          />
+          <button className="btn-enviar" onClick={enviarMensaje}>
+            Enviar →
+          </button>
+        </div>
+      </div>
+
     </div>
   )
 }
