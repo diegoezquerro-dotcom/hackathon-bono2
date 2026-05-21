@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { chatConOpenAI } from "./openai"
+import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
 
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
@@ -109,8 +110,11 @@ function Calculadora() {
     <div className="app">
 
       <div className="header">
-        <div>
-          <div className="logo-texto">bono₂</div>
+        <a className="calculator-brand" href="/" aria-label="Volver al inicio de Bono">
+          <img src={logo} alt="Bono2" />
+        </a>
+        <div className="calculator-heading">
+          <div className="logo-texto">Calculadora de huella</div>
           <div className="tagline">cutting emissions</div>
         </div>
       </div>

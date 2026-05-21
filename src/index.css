@@ -1,4 +1,5 @@
-@import url('https://fonts.bunny.net/css?family=lufga:400,500,600,700');
+@import url('https://fonts.bunny.net/css?family=lufga:400,500,600,700,800,900');
+@import '../brand/tokens/bono-brand.css';
 
 * {
   margin: 0;
@@ -7,153 +8,261 @@
 }
 
 body {
-  font-family: 'Lufga', sans-serif;
-  --gradiente: linear-gradient(135deg, #3001F7, #7243FD);
-  color: #e9e0f1;
+  font-family: var(--bono-font-family);
   min-height: 100vh;
 }
 
 :root {
-  --morado-oscuro: #3001F7;
-  --morado-claro: #7243FD;
-  --gris: #F1F1F1;
-  --gradiente: linear-gradient(135deg, #3001F7, #7243FD);
+  --calculator-ink: #08080b;
+  --calculator-muted: #596071;
+  --calculator-line: #ecebf4;
+  --calculator-panel: rgba(255, 255, 255, 0.88);
+  --calculator-soft: #f6f2ff;
+  --calculator-shadow: 0 28px 78px rgba(21, 15, 60, 0.13);
 }
 
-/* layout principal */
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 16px;
+  padding: 28px 18px 36px;
+  color: var(--calculator-ink);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(114, 67, 253, 0.16), transparent 32%),
+    linear-gradient(rgba(114, 67, 253, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(114, 67, 253, 0.045) 1px, transparent 1px),
+    #ffffff;
+  background-size: auto, 240px 240px, 240px 240px;
 }
 
-/* header */
 .header {
-  width: 100%;
-  max-width: 700px;
+  width: min(100%, 920px);
+  min-height: 72px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
+  gap: 22px;
+  margin-bottom: 26px;
+}
+
+.calculator-brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 132px;
+}
+
+.calculator-brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.calculator-heading {
+  display: grid;
+  gap: 3px;
+  padding-left: 22px;
+  border-left: 1px solid var(--calculator-line);
 }
 
 .logo-texto {
-  font-size: 28px;
-  font-weight: 700;
-  background: var(--gradiente);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--calculator-ink);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  font-weight: 900;
+  line-height: 1.1;
 }
 
 .tagline {
-  font-size: 13px;
-  color: #888;
-  font-weight: 400;
+  color: var(--calculator-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
 }
 
-/* contenedor del chat */
 .chat-container {
-  width: 100%;
-  max-width: 700px;
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 20px;
-  overflow: hidden;
+  width: min(100%, 920px);
+  height: min(74vh, 760px);
+  min-height: 560px;
   display: flex;
   flex-direction: column;
-  height: 70vh;
+  overflow: hidden;
+  border: 1px solid rgba(114, 67, 253, 0.16);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 92% 4%, rgba(114, 67, 253, 0.13), transparent 32%),
+    var(--calculator-panel);
+  box-shadow: var(--calculator-shadow);
+  backdrop-filter: blur(18px);
 }
 
-/* area de mensajes */
 .mensajes {
   flex: 1;
-  overflow-y: auto;
-  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+  overflow-y: auto;
+  padding: 34px;
+  scroll-behavior: smooth;
 }
 
-/* burbuja base */
-.burbuja {
-  max-width: 80%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 15px;
-  line-height: 1.5;
+.mensajes::-webkit-scrollbar {
+  width: 10px;
 }
 
-/* burbuja del bot */
-.burbuja-bot {
-  background: #3001F7;
-  border: 1px solid #2a2a2a;
-  border-bottom-left-radius: 4px;
-  align-self: flex-start;
+.mensajes::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgba(114, 67, 253, 0.34);
+  background-clip: content-box;
 }
 
-/* burbuja del usuario */
-.burbuja-usuario {
-  background: var(--gradiente);
-  border-bottom-right-radius: 4px;
-  align-self: flex-end;
-  color: white;
-}
-
-/* nombre del remitente */
 .remitente {
-  font-size: 11px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  opacity: 0.6;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin-bottom: 7px;
+  color: var(--calculator-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
 }
 
-/* input area */
+.burbuja {
+  max-width: min(76%, 620px);
+  padding: 15px 18px;
+  border-radius: 20px;
+  font-size: 0.98rem;
+  font-weight: 650;
+  line-height: 1.55;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.055);
+}
+
+.burbuja-bot {
+  color: #252938;
+  border: 1px solid var(--calculator-line);
+  border-bottom-left-radius: 6px;
+  background: #ffffff;
+}
+
+.burbuja-usuario {
+  color: #ffffff;
+  border-bottom-right-radius: 6px;
+  background: var(--bono-gradient-primary);
+}
+
 .input-area {
-  padding: 16px;
-  border-top: 1px solid #222;
   display: flex;
-  gap: 12px;
-  background: #0d0d0d;
+  gap: 14px;
+  padding: 18px;
+  border-top: 1px solid var(--calculator-line);
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .input-texto {
   flex: 1;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  padding: 12px 16px;
-  color: #F1F1F1;
-  font-family: 'Lufga', sans-serif;
-  font-size: 15px;
+  min-width: 0;
+  height: 58px;
+  padding: 0 18px;
+  color: var(--calculator-ink);
+  border: 1px solid rgba(114, 67, 253, 0.18);
+  border-radius: 16px;
   outline: none;
-  transition: border 0.2s;
+  background: #ffffff;
+  font-family: var(--bono-font-family);
+  font-size: 1rem;
+  font-weight: 700;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .input-texto:focus {
-  border-color: var(--morado-claro);
+  border-color: var(--bono-color-gradient-purple);
+  box-shadow: 0 0 0 5px rgba(114, 67, 253, 0.12);
 }
 
 .input-texto::placeholder {
-  color: #444;
+  color: #8b90a0;
+}
+
+.input-texto:disabled {
+  cursor: wait;
+  background: #f8f7fc;
 }
 
 .btn-enviar {
-  background: var(--gradiente);
+  flex: 0 0 auto;
+  min-width: 132px;
+  height: 58px;
+  padding: 0 22px;
+  color: #ffffff;
   border: none;
-  border-radius: 12px;
-  padding: 12px 20px;
-  color: white;
-  font-family: 'Lufga', sans-serif;
-  font-weight: 600;
-  font-size: 15px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #5525c9 0%, #7243fd 100%);
+  box-shadow: 0 18px 34px rgba(85, 37, 201, 0.24);
+  font-family: var(--bono-font-family);
+  font-size: 1rem;
+  font-weight: 900;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
 }
 
-.btn-enviar:hover {
-  opacity: 0.85;
+.btn-enviar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 44px rgba(85, 37, 201, 0.3);
+}
+
+.btn-enviar:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+@media (max-width: 720px) {
+  .app {
+    padding: 18px 12px 22px;
+  }
+
+  .header {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .calculator-brand {
+    width: 112px;
+  }
+
+  .calculator-heading {
+    padding-left: 14px;
+  }
+
+  .tagline {
+    display: none;
+  }
+
+  .chat-container {
+    height: calc(100vh - 116px);
+    min-height: 0;
+    border-radius: 22px;
+  }
+
+  .mensajes {
+    gap: 14px;
+    padding: 22px 16px;
+  }
+
+  .burbuja {
+    max-width: 88%;
+    padding: 13px 15px;
+    font-size: 0.94rem;
+  }
+
+  .input-area {
+    flex-direction: column;
+    padding: 14px;
+  }
+
+  .input-texto,
+  .btn-enviar {
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 58px;
+  }
 }
