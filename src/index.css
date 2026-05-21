@@ -266,3 +266,154 @@ body {
     min-height: 58px;
   }
 }
+
+/* resultado */
+.resultado-container {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+.resultado-hero {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+.resultado-label {
+  font-size: 15px;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.resultado-numero {
+  font-size: 64px;
+  font-weight: 700;
+  background: var(--gradiente);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.resultado-unidad {
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.equivalencias {
+  display: flex;
+  gap: 16px;
+}
+
+.equivalencia-card {
+  flex: 1;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.equivalencia-icono {
+  font-size: 32px;
+}
+
+.equivalencia-texto {
+  font-size: 14px;
+  color: #aaa;
+  line-height: 1.5;
+}
+
+.equivalencia-texto strong {
+  color: #F1F1F1;
+}
+
+.alcances {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.alcances-titulo {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.alcance-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 6px;
+}
+
+.alcance-valor {
+  color: #F1F1F1;
+  font-weight: 600;
+}
+
+.alcance-barra {
+  height: 8px;
+  background: #222;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.alcance-barra-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+
+.fuente {
+  font-size: 12px;
+  color: #444;
+  text-align: center;
+}
+
+.warning-estimacion {
+  background: #1a1500;
+  border: 1px solid #3a3000;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.warning-estimacion strong {
+  color: #F1F1F1;
+}
+
+.btn-cta {
+  background: var(--gradiente);
+  border: none;
+  border-radius: 14px;
+  padding: 18px 32px;
+  color: white;
+  font-family: 'Lufga', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+
+.btn-cta:hover {
+  opacity: 0.85;
+}
