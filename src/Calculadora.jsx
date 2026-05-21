@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { chatConGemini } from "./gemini"
+import Resultado from "./resultado"
 
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
@@ -40,19 +41,28 @@ function Calculadora() {
           setFase("muro")
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
-            texto: "¡Perfecto, ya tengo toda la información! 🌱 Para ver tu resultado completo necesito algunos datos. ¿Cuál es tu nombre?"
+            texto: "¡Perfecto, ya tengo toda la información! 🌱 Solo un paso más, escribe tu correo empresarial para poder recibir tu estimación"
           }])
         } else {
           setMensajes([...nuevosMensajes, { tipo: "bot", texto: respuesta.texto }])
         }
 
       } else if (fase === "muro") {
-        // aqui va el formulario del muro, por ahorita solo avanza
-        setFase("resultado")
-        setMensajes([...nuevosMensajes, {
-          tipo: "bot",
-          texto: `Gracias ${textoUsuario}! Calculando tu huella... 🌍`
-        }])
+        // validacion de correo
+        const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(textoUsuario)
+        
+        if (!emailValido) {
+          setMensajes([...nuevosMensajes, {
+            tipo: "bot",
+            texto: "Ese correo no parece válido 🤔 ¿Puedes verificarlo? Necesitamos un correo real para enviarte tu reporte."
+          }])
+        } else {
+          setFase("resultado")
+          setMensajes([...nuevosMensajes, {
+            tipo: "bot",
+            texto: `¡Listo! Calculando tu huella de carbono... 🌍`
+          }])
+        }
       }
 
     } catch (error) {
@@ -92,7 +102,7 @@ function Calculadora() {
         setFase("muro")
         setMensajes([...nuevosMensajes, {
           tipo: "bot",
-          texto: "¡Perfecto, ya tengo toda la información! 🌱 ¿Cuál es tu nombre para ver tu resultado?"
+          texto: "¡Perfecto, ya tengo toda la información! 🌱 Solo un paso más, escribe tu correo empresarial para poder recibir tu estimación"
         }])
         window._fallbackIndex = 0
       }
@@ -153,7 +163,9 @@ function Calculadora() {
           </button>
         </div>
       </div>
-
+      {fase === "resultado" && datos && (
+        <Resultado datos={datos} nombre="Usuario" />
+      )}
     </div>
   )
 }
