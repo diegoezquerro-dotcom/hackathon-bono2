@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react"
-import { chatConGemini } from "./gemini"
+import { chatConOpenAI } from "./openai"
 
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
@@ -31,10 +31,10 @@ function Calculadora() {
 
     try {
       if (fase === "chat") {
-        const respuesta = await chatConGemini(mensajes, textoUsuario)
+        const respuesta = await chatConOpenAI(mensajes, textoUsuario)
 
         if (respuesta.tipo === "datos") {
-          // gemini termino de recopilar info
+          // OpenAI termino de recopilar info
           setDatos(respuesta.datos)
           setFase("muro")
           setMensajes([...nuevosMensajes, {
