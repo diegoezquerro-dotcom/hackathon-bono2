@@ -1,0 +1,10 @@
+:root {
+  --bono-color-black: #000000;
+  --bono-color-gradient-blue: #3001F7;
+  --bono-color-gradient-purple: #7243FD;
+  --bono-color-light-gray: #F1F1F1;
+  --bono-color-white: #FFFFFF;
+  --bono-gradient-primary: linear-gradient(135deg, #3001F7 0%, #7243FD 100%);
+  --bono-font-family: 'Lufga', 'Inter', 'Avenir Next', 'Segoe UI', sans-serif;
+  --bono-font-logo: 'Cocon Pro', 'Lufga', sans-serif;
+}

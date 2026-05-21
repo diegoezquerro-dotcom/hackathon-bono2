@@ -1,0 +1,138 @@
+{
+  "name": "Bono",
+  "tagline": "cutting emissions",
+  "sourceManual": "brand/source/manual-identidad-bono.pdf",
+  "colors": {
+    "black": {
+      "hex": "#000000",
+      "rgb": [
+        0,
+        0,
+        0
+      ],
+      "cmyk": [
+        75,
+        68,
+        67,
+        90
+      ],
+      "usage": "Primary brand color and high-contrast logo/text color."
+    },
+    "gradientBlue": {
+      "hex": "#3001F7",
+      "rgb": [
+        48,
+        1,
+        247
+      ],
+      "cmyk": [
+        85,
+        78,
+        0,
+        0
+      ],
+      "usage": "Primary gradient start/accent blue."
+    },
+    "gradientPurple": {
+      "hex": "#7243FD",
+      "rgb": [
+        114,
+        67,
+        253
+      ],
+      "cmyk": [
+        71,
+        73,
+        0,
+        0
+      ],
+      "usage": "Primary gradient end/accent purple."
+    },
+    "lightGray": {
+      "hex": "#F1F1F1",
+      "rgb": [
+        241,
+        241,
+        241
+      ],
+      "cmyk": [
+        4,
+        3,
+        3,
+        0
+      ],
+      "usage": "Secondary color for presentations, web surfaces, and light logo usage."
+    },
+    "white": {
+      "hex": "#FFFFFF",
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "usage": "Clear space, inverse layouts, and neutral page background."
+    }
+  },
+  "gradients": {
+    "primary": {
+      "css": "linear-gradient(135deg, #3001F7 0%, #7243FD 100%)",
+      "stops": [
+        "#3001F7",
+        "#7243FD"
+      ]
+    }
+  },
+  "typography": {
+    "logo": {
+      "family": "Cocon Pro",
+      "weight": "Regular",
+      "usage": "Logo only. Do not use for general UI or marketing copy."
+    },
+    "brand": {
+      "family": "Lufga",
+      "bodyWeights": [
+        "Regular",
+        "Medium"
+      ],
+      "headingWeights": [
+        "SemiBold",
+        "Bold",
+        "ExtraBold"
+      ],
+      "fallbackCss": "'Lufga', 'Inter', 'Avenir Next', 'Segoe UI', sans-serif"
+    }
+  },
+  "logoRules": {
+    "concept": "The last O/0 represents the break in the emissions chain and acts as the brand's visual accent.",
+    "clearSpace": "Minimum clear space equals 100% of the height of the '2' element.",
+    "minimumSize": {
+      "width": "3 cm",
+      "height": "1 cm"
+    },
+    "approvedVariants": [
+      "Original",
+      "Gradient",
+      "Black",
+      "Light gray on color surfaces",
+      "Light gray on black surface"
+    ],
+    "doNot": [
+      "Do not rotate the logo.",
+      "Do not stretch or elongate the logo.",
+      "Do not use unapproved colors.",
+      "Do not create an outline version.",
+      "Do not place the logo on backgrounds with insufficient contrast.",
+      "Do not place the logo over busy images that reduce legibility."
+    ]
+  },
+  "iconography": {
+    "style": "Uses Bono black plus the blue-purple gradient palette.",
+    "manualIcons": [
+      "Dashboard 1: Proyectos de mitigacion",
+      "Estrategia/Analisis",
+      "Dashboard 2: Cambio/Transformacion a energias renovables",
+      "Huella de carbono Targets",
+      "Dashboard 3: Carbon Offsets"
+    ]
+  }
+}
