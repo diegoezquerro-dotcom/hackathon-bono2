@@ -1,57 +1,68 @@
-import { useState } from "react"
-
-const preguntas = [
-  { id: "empleados", texto: "¿Cuántos empleados tiene tu empresa?" },
-  { id: "kwh_mes", texto: "¿Cuánto pagas aproximadamente de luz al mes? (en pesos)" },
-  { id: "vehiculos_km", texto: "¿Cuántos vehículos opera la empresa y cuántos km recorren en total al mes?" },
-  { id: "gas_pesos", texto: "¿Usas gas natural o LP? ¿Cuánto pagas al mes aproximadamente?" },
-  { id: "residuos_kg", texto: "¿Cuánta basura genera tu empresa al mes? (en kg aproximadamente)" },
-  { id: "vuelos", texto: "¿Cuántos vuelos de trabajo hacen tus empleados al mes en total?" },
-  { id: "empleados_km", texto: "¿Cuántos empleados van al trabajo en coche propio y qué distancia recorren al día?" },
-  { id: "agua_m3", texto: "¿Tienes recibo de agua? ¿Cuántos metros cúbicos consumes al mes?" },
-]
+import { useState, useRef, useEffect } from "react"
+import { chatConGemini } from "./gemini"
 
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
-    { tipo: "bot", texto: "Hola 👋 Voy a ayudarte a calcular la huella de carbono de tu empresa en menos de 3 minutos. ¿Empezamos?" }
+    { tipo: "bot", texto: "Hola 👋 Soy el asistente de Bono. Voy a ayudarte a estimar la huella de carbono de tu empresa en menos de 3 minutos. ¿Empezamos?" }
   ])
   const [input, setInput] = useState("")
-  const [preguntaActual, setPreguntaActual] = useState(0)
-  const [respuestas, setRespuestas] = useState({})
-  const [fase, setFase] = useState("inicio")
+  const [cargando, setCargando] = useState(false)
+  const [fase, setFase] = useState("chat") // chat, muro, resultado
+  const [datos, setDatos] = useState(null)
+  const mensajesRef = useRef(null)
 
-  const enviarMensaje = () => {
-    if (!input.trim()) return
+  // scroll automatico al ultimo mensaje
+  useEffect(() => {
+    if (mensajesRef.current) {
+      mensajesRef.current.scrollTop = mensajesRef.current.scrollHeight
+    }
+  }, [mensajes])
 
-    const nuevosMensajes = [...mensajes, { tipo: "usuario", texto: input }]
+  const enviarMensaje = async () => {
+    if (!input.trim() || cargando) return
 
-    if (fase === "inicio") {
-      setFase("preguntas")
-      setMensajes([...nuevosMensajes, { tipo: "bot", texto: preguntas[0].texto }])
-      setPreguntaActual(0)
+    const textoUsuario = input
+    setInput("")
 
-    } else if (fase === "preguntas") {
-      const preguntaId = preguntas[preguntaActual].id
-      const nuevasRespuestas = { ...respuestas, [preguntaId]: input }
-      setRespuestas(nuevasRespuestas)
+    // agrega mensaje del usuario
+    const nuevosMensajes = [...mensajes, { tipo: "usuario", texto: textoUsuario }]
+    setMensajes(nuevosMensajes)
+    setCargando(true)
 
-      if (preguntaActual + 1 < preguntas.length) {
-        setMensajes([...nuevosMensajes, { tipo: "bot", texto: preguntas[preguntaActual + 1].texto }])
-        setPreguntaActual(preguntaActual + 1)
-      } else {
-        setFase("muro")
-        setMensajes([...nuevosMensajes, { tipo: "bot", texto: "¡Listo! Ya tengo todo lo que necesito. Escribe tu nombre para ver tu resultado 🌱" }])
+    try {
+      if (fase === "chat") {
+        const respuesta = await chatConGemini(mensajes, textoUsuario)
+
+        if (respuesta.tipo === "datos") {
+          // gemini termino de recopilar info
+          setDatos(respuesta.datos)
+          setFase("muro")
+          setMensajes([...nuevosMensajes, {
+            tipo: "bot",
+            texto: "¡Perfecto, ya tengo toda la información! 🌱 Para ver tu resultado completo necesito algunos datos. ¿Cuál es tu nombre?"
+          }])
+        } else {
+          setMensajes([...nuevosMensajes, { tipo: "bot", texto: respuesta.texto }])
+        }
+
+      } else if (fase === "muro") {
+        // aqui va el formulario del muro, por ahorita solo avanza
+        setFase("resultado")
+        setMensajes([...nuevosMensajes, {
+          tipo: "bot",
+          texto: `Gracias ${textoUsuario}! Calculando tu huella... 🌍`
+        }])
       }
 
-    } else if (fase === "muro") {
-      setFase("resultado")
+    } catch (error) {
+      console.log("ERROR:", error)
       setMensajes([...nuevosMensajes, {
         tipo: "bot",
-        texto: `Gracias ${input}! 🎉 Calculando tu huella de carbono...`
+        texto: "Hubo un error conectando con el servidor. Intenta de nuevo."
       }])
     }
 
-    setInput("")
+    setCargando(false)
   }
 
   const handleKeyDown = (e) => {
@@ -61,7 +72,6 @@ function Calculadora() {
   return (
     <div className="app">
 
-      {/* header */}
       <div className="header">
         <div>
           <div className="logo-texto">bono₂</div>
@@ -69,9 +79,8 @@ function Calculadora() {
         </div>
       </div>
 
-      {/* chat */}
       <div className="chat-container">
-        <div className="mensajes">
+        <div className="mensajes" ref={mensajesRef}>
           {mensajes.map((msg, i) => (
             <div key={i} style={{ alignSelf: msg.tipo === "bot" ? "flex-start" : "flex-end" }}>
               <div className="remitente">
@@ -82,6 +91,15 @@ function Calculadora() {
               </div>
             </div>
           ))}
+
+          {cargando && (
+            <div style={{ alignSelf: "flex-start" }}>
+              <div className="remitente">Bono</div>
+              <div className="burbuja burbuja-bot">
+                <span>...</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="input-area">
@@ -91,9 +109,10 @@ function Calculadora() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Escribe tu respuesta..."
+            placeholder={cargando ? "Bono está escribiendo..." : "Escribe tu respuesta..."}
+            disabled={cargando}
           />
-          <button className="btn-enviar" onClick={enviarMensaje}>
+          <button className="btn-enviar" onClick={enviarMensaje} disabled={cargando}>
             Enviar →
           </button>
         </div>
