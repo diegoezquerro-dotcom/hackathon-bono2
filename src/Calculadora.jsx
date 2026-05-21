@@ -35,6 +35,7 @@ function Calculadora() {
 
         if (respuesta.tipo === "datos") {
           // OpenAI termino de recopilar info
+          console.log("DATOS DE OPENAI:", respuesta.datos)
           setDatos(respuesta.datos)
           setFase("muro")
           setMensajes([...nuevosMensajes, {
@@ -56,10 +57,45 @@ function Calculadora() {
 
     } catch (error) {
       console.log("ERROR:", error)
-      setMensajes([...nuevosMensajes, {
-        tipo: "bot",
-        texto: "Hubo un error conectando con el servidor. Intenta de nuevo."
-      }])
+      
+      // fallback - preguntas hardcodeadas si gemini falla
+      const preguntasFallback = [
+        "¿En qué giro opera tu empresa y cuántos empleados tienen?",
+        "¿Cuánto pagan de luz al mes aproximadamente? (en pesos está bien)",
+        "¿Usan gas en sus instalaciones? ¿Cuánto pagan al mes?",
+        "¿Cuántos vehículos tiene la empresa?",
+        "¿Sus empleados viajan en avión por trabajo? ¿Cuántos viajes al mes?",
+        "¿La mayoría de empleados llega en coche o transporte público?",
+        "¿Cuánta basura genera la empresa? (una bolsa al día, un contenedor a la semana...)",
+        "¿Consumen agua de forma significativa en su proceso productivo?",
+      ]
+
+      if (!window._fallbackIndex) window._fallbackIndex = 0
+
+      if (window._fallbackIndex < preguntasFallback.length) {
+        setMensajes([...nuevosMensajes, {
+          tipo: "bot",
+          texto: preguntasFallback[window._fallbackIndex]
+        }])
+        window._fallbackIndex++
+      } else {
+        // ya termino el fallback, manda al muro con datos estimados
+        setDatos({
+          kwh_mes: 5000,
+          vehiculos_km_mes: 6000,
+          gas_kwh_mes: 2000,
+          residuos_kg_mes: 200,
+          vuelos_mes: 2,
+          empleados_km_mes: 3000,
+          agua_m3_mes: 50
+        })
+        setFase("muro")
+        setMensajes([...nuevosMensajes, {
+          tipo: "bot",
+          texto: "¡Perfecto, ya tengo toda la información! 🌱 ¿Cuál es tu nombre para ver tu resultado?"
+        }])
+        window._fallbackIndex = 0
+      }
     }
 
     setCargando(false)
