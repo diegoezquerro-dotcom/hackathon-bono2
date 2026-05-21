@@ -3,6 +3,7 @@ import iconMitigation from '../brand/assets/optimized/dashboard-mitigation-proje
 import iconStrategy from '../brand/assets/optimized/strategy-analysis.webp';
 import iconRenewable from '../brand/assets/optimized/renewable-energy-transformation.webp';
 import iconTargets from '../brand/assets/optimized/carbon-footprint-targets.webp';
+import Calculadora from './Calculadora';
 
 const calculatorHref = '/calculadora';
 
@@ -340,6 +341,10 @@ function FinalCta() {
 }
 
 export default function App() {
+  if (window.location.pathname === calculatorHref) {
+    return <Calculadora />;
+  }
+
   return (
     <>
       <Header />
