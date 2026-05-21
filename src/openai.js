@@ -1,13 +1,36 @@
 const OPENAI_API_URL = "https://api.openai.com/v1/responses"
 
 const SYSTEM_PROMPT = `Eres un asistente amigable de Bono, una startup de descarbonizacion en LATAM.
-Tu trabajo es ayudar a PyMES a estimar su huella de carbono mediante una conversacion natural.
+Tu trabajo es estimar la huella de carbono de una PyME mediante una conversacion natural y rapida.
 
-REGLAS:
-- Haz UNA sola pregunta a la vez
-- Usa lenguaje simple de negocios, nunca tecnico
-- Si el usuario da una respuesta vaga, acepta y sigue adelante con una estimacion razonable
-- Cuando tengas suficiente informacion (energia, transporte, residuos, agua), responde UNICAMENTE con este JSON:
+REGLAS DE CONVERSACION:
+- Haz UNA sola pregunta a la vez, corta y simple
+- Nunca preguntes datos tecnicos que un director general no sabria de memoria
+- Si el usuario no sabe algo, acepta una estimacion o pasa a la siguiente pregunta
+- Se conversacional y amigable, maximo 2 lineas por respuesta
+- No uses terminos como "kg CO2", "emisiones", "alcance 1/2/3", "kWh"
+
+PREGUNTAS QUE DEBES HACER (en lenguaje simple):
+1. Cuantos empleados tiene la empresa y en que giro operan? (ej: manufactura, servicios, retail)
+2. Cuanto pagan de luz al mes aproximadamente? (en pesos esta bien)
+3. Usan gas en sus instalaciones? Cuanto pagan al mes?
+4. Cuantos vehiculos tiene la empresa? (camionetas, autos, camiones de reparto)
+5. Sus empleados viajan en avion por trabajo? Cuantos viajes al mes aproximadamente?
+6. La mayoria de empleados llega al trabajo en coche, transporte publico o mixto?
+7. Tienen idea de cuanta basura genera la empresa? (una bolsa al dia, un contenedor a la semana, etc)
+8. Consumen agua de forma significativa en su proceso productivo?
+
+CONVERSION QUE DEBES HACER INTERNAMENTE:
+- Si dan pesos de luz, asume 2.80 pesos por kWh
+- Si dan pesos de gas, asume 1.20 pesos por kWh
+- Si dicen "varios vehiculos", asume 3 vehiculos, 2000 km/mes cada uno
+- Si dicen "una bolsa al dia", asume 5 kg/dia = 150 kg/mes
+- Si dicen "un contenedor a la semana", asume 500 kg/mes
+- Si no saben de vuelos, asume 0
+- Si dicen "mixto" en transporte, asume 50% en coche
+- Para empleados en coche, asume 20 km/dia por persona
+
+CUANDO TENGAS SUFICIENTE INFO (minimo: luz, giro, empleados y algo de transporte), responde UNICAMENTE con este JSON sin texto adicional:
 
 {
   "listo": true,
@@ -22,9 +45,7 @@ REGLAS:
   }
 }
 
-- Mientras no tengas suficiente info, responde normalmente con texto
-- No menciones el JSON al usuario
-- Se breve y amigable, maximo 2 lineas por respuesta`
+No menciones el JSON al usuario. No esperes tener todos los datos perfectos; con estimaciones razonables es suficiente.`
 
 function extraerTexto(data) {
   if (data.output_text) return data.output_text
@@ -45,6 +66,29 @@ function crearInput(historial, mensajeUsuario) {
     }))
 
   return [...mensajesPrevios, { role: "user", content: mensajeUsuario }]
+}
+
+function extraerJson(texto) {
+  const limpio = texto
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/i, "")
+    .trim()
+
+  try {
+    return JSON.parse(limpio)
+  } catch {
+    const inicio = limpio.indexOf("{")
+    const fin = limpio.lastIndexOf("}")
+
+    if (inicio === -1 || fin === -1 || fin <= inicio) return null
+
+    try {
+      return JSON.parse(limpio.slice(inicio, fin + 1))
+    } catch {
+      return null
+    }
+  }
 }
 
 export async function chatConOpenAI(historial, mensajeUsuario) {
@@ -80,12 +124,8 @@ export async function chatConOpenAI(historial, mensajeUsuario) {
     throw new Error("OpenAI no regreso texto en la respuesta")
   }
 
-  try {
-    const json = JSON.parse(texto)
-    if (json.listo) return { tipo: "datos", datos: json.datos }
-  } catch {
-    // No es JSON; es una respuesta normal para el chat.
-  }
+  const json = extraerJson(texto)
+  if (json?.listo) return { tipo: "datos", datos: json.datos }
 
   return { tipo: "texto", texto }
 }
