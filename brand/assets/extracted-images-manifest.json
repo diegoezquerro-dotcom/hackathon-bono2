@@ -1,0 +1,182 @@
+[
+  {
+    "page": 1,
+    "index": 0,
+    "sourceName": "Im0.png",
+    "file": "brand/assets/extracted-images/page-01-image-00.png",
+    "width": 1339,
+    "height": 767,
+    "mode": "RGB"
+  },
+  {
+    "page": 4,
+    "index": 0,
+    "sourceName": "Im0.png",
+    "file": "brand/assets/extracted-images/page-04-image-00.png",
+    "width": 927,
+    "height": 316,
+    "mode": "RGB"
+  },
+  {
+    "page": 4,
+    "index": 1,
+    "sourceName": "Im1.jpg",
+    "file": "brand/assets/extracted-images/page-04-image-01.png",
+    "width": 1207,
+    "height": 243,
+    "mode": "RGB"
+  },
+  {
+    "page": 4,
+    "index": 2,
+    "sourceName": "Im2.png",
+    "file": "brand/assets/extracted-images/page-04-image-02.png",
+    "width": 1212,
+    "height": 243,
+    "mode": "RGB"
+  },
+  {
+    "page": 5,
+    "index": 0,
+    "sourceName": "Im0.png",
+    "file": "brand/assets/extracted-images/page-05-image-00.png",
+    "width": 717,
+    "height": 306,
+    "mode": "RGB"
+  },
+  {
+    "page": 6,
+    "index": 0,
+    "sourceName": "Im0.png",
+    "file": "brand/assets/extracted-images/page-06-image-00.png",
+    "width": 353,
+    "height": 121,
+    "mode": "RGB"
+  },
+  {
+    "page": 7,
+    "index": 0,
+    "sourceName": "Im0.jp2",
+    "file": "brand/assets/extracted-images/page-07-image-00.png",
+    "width": 794,
+    "height": 518,
+    "mode": "RGBA"
+  },
+  {
+    "page": 7,
+    "index": 1,
+    "sourceName": "Im1.jp2",
+    "file": "brand/assets/extracted-images/page-07-image-01.png",
+    "width": 786,
+    "height": 514,
+    "mode": "RGBA"
+  },
+  {
+    "page": 7,
+    "index": 2,
+    "sourceName": "Im2.jp2",
+    "file": "brand/assets/extracted-images/page-07-image-02.png",
+    "width": 786,
+    "height": 514,
+    "mode": "RGBA"
+  },
+  {
+    "page": 7,
+    "index": 3,
+    "sourceName": "Im3.jp2",
+    "file": "brand/assets/extracted-images/page-07-image-03.png",
+    "width": 788,
+    "height": 514,
+    "mode": "RGBA"
+  },
+  {
+    "page": 8,
+    "index": 0,
+    "sourceName": "Im0.png",
+    "file": "brand/assets/extracted-images/page-08-image-00.png",
+    "width": 453,
+    "height": 155,
+    "mode": "RGB"
+  },
+  {
+    "page": 8,
+    "index": 1,
+    "sourceName": "Im1.png",
+    "file": "brand/assets/extracted-images/page-08-image-01.png",
+    "width": 589,
+    "height": 115,
+    "mode": "RGB"
+  },
+  {
+    "page": 8,
+    "index": 2,
+    "sourceName": "Im2.jpg",
+    "file": "brand/assets/extracted-images/page-08-image-02.png",
+    "width": 766,
+    "height": 404,
+    "mode": "RGB"
+  },
+  {
+    "page": 12,
+    "index": 0,
+    "sourceName": "Im0.jpg",
+    "file": "brand/assets/extracted-images/page-12-image-00.png",
+    "width": 274,
+    "height": 274,
+    "mode": "RGB"
+  },
+  {
+    "page": 13,
+    "index": 0,
+    "sourceName": "Im0.jpg",
+    "file": "brand/assets/extracted-images/page-13-image-00.png",
+    "width": 572,
+    "height": 1126,
+    "mode": "RGB"
+  },
+  {
+    "page": 13,
+    "index": 1,
+    "sourceName": "Im1.jpg",
+    "file": "brand/assets/extracted-images/page-13-image-01.png",
+    "width": 1126,
+    "height": 686,
+    "mode": "RGB"
+  },
+  {
+    "page": 13,
+    "index": 2,
+    "sourceName": "Im2.jpg",
+    "file": "brand/assets/extracted-images/page-13-image-02.png",
+    "width": 671,
+    "height": 1020,
+    "mode": "RGB"
+  },
+  {
+    "page": 13,
+    "index": 3,
+    "sourceName": "Im3.jpg",
+    "file": "brand/assets/extracted-images/page-13-image-03.png",
+    "width": 753,
+    "height": 1012,
+    "mode": "RGB"
+  },
+  {
+    "page": 13,
+    "index": 4,
+    "sourceName": "Im4.jpg",
+    "file": "brand/assets/extracted-images/page-13-image-04.png",
+    "width": 1126,
+    "height": 795,
+    "mode": "RGB"
+  },
+  {
+    "page": 15,
+    "index": 0,
+    "sourceName": "Im0.png",
+    "file": "brand/assets/extracted-images/page-15-image-00.png",
+    "width": 1339,
+    "height": 767,
+    "mode": "RGB"
+  }
+]
