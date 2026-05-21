@@ -29,11 +29,11 @@ const PRECIO_GAS_KWH_MXN = 1.2
 
 export function calcularHuella(datos) {
   // electricidad - convierte pesos a kwh si es necesario
-  const kwh = datos.kwh_mes || 0
+  const kwh = datos.kwh_mes || ((datos.luz_mxn_mes || 0) / PRECIO_KWH_MXN)
   const emisionesElectricidad = kwh * FACTORES.electricidad_kwh  // alcance 2
 
   // gas - convierte pesos a kwh
-  const gasKwh = datos.gas_kwh_mes || 0
+  const gasKwh = datos.gas_kwh_mes || ((datos.gas_mxn_mes || 0) / PRECIO_GAS_KWH_MXN)
   const emisionesGas = gasKwh * FACTORES.gas_kwh  // alcance 1
 
   // vehiculos propios

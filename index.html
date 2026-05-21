@@ -1,10 +1,61 @@
 <!doctype html>
-<html lang="en">
+<html lang="es-MX">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>eco-calculadora</title>
+    <meta
+      name="description"
+      content="Calculadora gratuita de huella de carbono para PyMEs en Latinoamerica. Estima emisiones de CO2e en menos de 3 minutos con lenguaje simple."
+    />
+    <title>Bono2 | Calculadora de huella de carbono para PyMEs</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Cómo se mide la huella de carbono de una empresa?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Se estima identificando las actividades que generan gases de efecto invernadero, como consumo de electricidad, uso de combustibles, transporte, residuos y actividades de la cadena de valor. Luego se aplican factores de emision para convertir esas actividades en toneladas de CO2e."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué significa CO2e?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "CO2e significa dioxido de carbono equivalente. Es una unidad que permite expresar distintos gases de efecto invernadero en una sola medida comparable."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué son las emisiones de Alcance 1, 2 y 3?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Alcance 1 son emisiones directas de la empresa. Alcance 2 son emisiones indirectas por electricidad comprada. Alcance 3 son otras emisiones indirectas de la cadena de valor, como proveedores, transporte, residuos y viajes."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Esta calculadora sirve para responder cuestionarios como CDP, EcoVadis o solicitudes de clientes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sirve como primer diagnostico para entender tus emisiones y preparar mejor la informacion que suelen pedir clientes corporativos. No reemplaza una medicion formal, pero ayuda a identificar datos clave y brechas de informacion."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿La estimación es exacta?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Es una estimacion rapida basada en respuestas simplificadas. Su precision depende de la calidad de los datos ingresados. Para reportes formales o decisiones de inversion, se recomienda una medicion mas detallada."
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
