@@ -18,7 +18,7 @@ const painCards = [
 const steps = [
   {
     title: 'Responde preguntas simples',
-    text: 'Te preguntaremos sobre tu operación: electricidad, vehículos, transporte, residuos y actividad general de tu empresa.',
+    text: 'Te preguntaremos sobre tu operación: electricidad, vehículos, materiales, residuos y actividad general de tu empresa.',
   },
   {
     title: 'Recibe una estimación inicial',
@@ -36,7 +36,7 @@ const checklist = [
   'Consumo mensual de electricidad, o una estimación del gasto',
   'Vehículos propios o transporte usado por la empresa',
   'Residuos generados de forma aproximada',
-  'Viajes, logística o entregas, si aplican',
+  'Viajes, materiales o residuos, si aplican',
 ];
 
 const scopes = [
@@ -85,7 +85,7 @@ const faqs = [
 const industries = [
   {
     title: 'Restaurantes y alimentos',
-    text: 'Electricidad, gas, refrigeración, residuos orgánicos y logística pueden ser fuentes relevantes de emisiones.',
+    text: 'Electricidad, gas, refrigeración, residuos orgánicos y materiales pueden ser fuentes relevantes de emisiones.',
     icon: iconMitigation,
   },
   {
@@ -94,8 +94,8 @@ const industries = [
     icon: iconRenewable,
   },
   {
-    title: 'Logística y distribución',
-    text: 'Vehículos, combustibles, rutas y entregas suelen ser los principales motores de emisiones.',
+    title: 'Transporte y distribución',
+    text: 'Vehículos, combustibles y distancia recorrida suelen ser los principales motores de emisiones.',
     icon: iconStrategy,
   },
   {

@@ -1,8 +1,104 @@
 import { useState, useEffect } from "react"
 import { supabase } from "./supabase"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
 
-const COLORES = ["#3001F7", "#7243FD", "#9B6FFF", "#B89AFF", "#4B0082", "#6A0DAD"]
+const COLORES = [
+  "#3001F7",
+  "#7243FD",
+  "#9B6FFF",
+  "#B89AFF",
+  "#4B0082",
+  "#6A0DAD",
+  "#1F7A8C",
+  "#00A878",
+  "#F59E0B",
+  "#EF4444",
+  "#64748B",
+  "#111827",
+  "#A855F7",
+]
+
+const INDUSTRIAS_CANONICAS = [
+  "Manufactura y Produccion Industrial",
+  "Produccion y Procesamiento de Alimentos",
+  "Restaurantes, Hoteles y Hospitalidad",
+  "Transporte",
+  "Retail y Comercio",
+  "Distribucion y Almacenamiento",
+  "Oficinas y Servicios Profesionales",
+  "Construccion e Infraestructura",
+  "Operacion y Administracion de Inmuebles",
+  "Agricultura y Produccion Primaria",
+  "Textil y Confeccion",
+  "Salud y Laboratorios",
+  "Otro",
+]
+
+function normalizarTexto(valor = "") {
+  return valor
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+}
+
+function normalizarGiro(giro) {
+  if (!giro) return "Sin especificar"
+
+  const texto = normalizarTexto(giro)
+  const exacto = INDUSTRIAS_CANONICAS.find((industria) => normalizarTexto(industria) === texto)
+  if (exacto) return exacto
+
+  if (texto.includes("inmueble") || texto.includes("inmobiliaria")) {
+    return "Operacion y Administracion de Inmuebles"
+  }
+
+  if (texto.includes("distribucion") || texto.includes("almacen")) {
+    return "Distribucion y Almacenamiento"
+  }
+
+  if (texto.includes("restaurante") || texto.includes("hotel") || texto.includes("hospitalidad")) {
+    return "Restaurantes, Hoteles y Hospitalidad"
+  }
+
+  if (texto.includes("alimento") || texto.includes("bebida")) {
+    return "Produccion y Procesamiento de Alimentos"
+  }
+
+  if (texto.includes("manufactura") || texto.includes("industria")) {
+    return "Manufactura y Produccion Industrial"
+  }
+
+  if (texto.includes("transporte")) {
+    return "Transporte"
+  }
+
+  if (texto.includes("retail") || texto.includes("comercio")) {
+    return "Retail y Comercio"
+  }
+
+  if (texto.includes("oficina") || texto.includes("servicio")) {
+    return "Oficinas y Servicios Profesionales"
+  }
+
+  if (texto.includes("construccion") || texto.includes("infraestructura")) {
+    return "Construccion e Infraestructura"
+  }
+
+  if (texto.includes("agricultura") || texto.includes("primaria")) {
+    return "Agricultura y Produccion Primaria"
+  }
+
+  if (texto.includes("textil") || texto.includes("confeccion")) {
+    return "Textil y Confeccion"
+  }
+
+  if (texto.includes("salud") || texto.includes("laboratorio")) {
+    return "Salud y Laboratorios"
+  }
+
+  return giro
+}
 
 function Admin() {
   const [username, setUsername] = useState("")
@@ -79,34 +175,47 @@ function Admin() {
     ? Math.round(sesiones.reduce((acc, s) => acc + (s.tiempo_segundos || 0), 0) / sesiones.length)
     : 0
   const clicksCalendly = leads.filter(l => l.clicks_calendly).length
+  const leadsNormalizados = leads.map((lead) => ({
+    ...lead,
+    giroNormalizado: normalizarGiro(lead.giro),
+  }))
 
-  const giroCount = leads.reduce((acc, lead) => {
-    const giro = lead.giro || "Sin especificar"
+  const giroCount = leadsNormalizados.reduce((acc, lead) => {
+    const giro = lead.giroNormalizado
     acc[giro] = (acc[giro] || 0) + 1
     return acc
   }, {})
-  const datosGrafica = Object.entries(giroCount).map(([name, value]) => ({ name, value }))
+  const datosGrafica = Object.entries(giroCount)
+    .sort(([a], [b]) => {
+      const ordenA = INDUSTRIAS_CANONICAS.indexOf(a)
+      const ordenB = INDUSTRIAS_CANONICAS.indexOf(b)
+      return (ordenA === -1 ? 999 : ordenA) - (ordenB === -1 ? 999 : ordenB)
+    })
+    .map(([name, value]) => ({ name, value }))
 
-  const clicksPorGiro = leads
+  const clicksPorGiro = leadsNormalizados
     .filter(l => l.clicks_calendly)
     .reduce((acc, lead) => {
-      const giro = lead.giro || "Sin especificar"
+      const giro = lead.giroNormalizado
       acc[giro] = (acc[giro] || 0) + 1
       return acc
     }, {})
 
   const leadsFiltrados = filtroGiro
-    ? leads.filter(l => l.giro?.toLowerCase().includes(filtroGiro.toLowerCase()))
-    : leads
+    ? leadsNormalizados.filter(l => l.giroNormalizado === filtroGiro)
+    : leadsNormalizados
 
-  const girosUnicos = [...new Set(leads.map(l => l.giro).filter(Boolean))]
+  const girosUnicos = [
+    ...INDUSTRIAS_CANONICAS,
+    ...Object.keys(giroCount).filter((giro) => !INDUSTRIAS_CANONICAS.includes(giro)),
+  ]
 
   if (!autenticado) {
     return (
       <div className="admin-login">
         <div className="admin-login-card">
-          <div className="logo-texto" style={{ marginBottom: "8px" }}>bono₂</div>
-          <p className="tagline" style={{ marginBottom: "32px" }}>Panel de administración</p>
+          <img className="admin-logo" src={logo} alt="Bono2" />
+          <p className="admin-login-subtitle">Panel de administracion</p>
 
           <input
             className="input-texto"
@@ -140,7 +249,10 @@ function Admin() {
     <div className="admin-shell">
 
       <div className="admin-header">
-        <div className="logo-texto">bono₂ Admin</div>
+        <div className="admin-brand">
+          <img className="admin-logo" src={logo} alt="Bono2" />
+          <span>Admin</span>
+        </div>
         <button className="admin-logout" onClick={cerrarSesion}>
           Cerrar sesión
         </button>
@@ -202,7 +314,8 @@ function Admin() {
                       cy="50%"
                       outerRadius={100}
                       dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     >
                       {datosGrafica.map((_, index) => (
                         <Cell key={index} fill={COLORES[index % COLORES.length]} />
@@ -266,7 +379,7 @@ function Admin() {
                         <td>{lead.nombre}</td>
                         <td>{lead.empresa}</td>
                         <td>{lead.correo}</td>
-                        <td>{lead.giro}</td>
+                        <td>{lead.giroNormalizado}</td>
                         <td>{lead.huella}</td>
                         <td>{new Date(lead.created_at).toLocaleDateString("es-MX")}</td>
                       </tr>
@@ -322,7 +435,7 @@ function Admin() {
                         <td>{lead.nombre}</td>
                         <td>{lead.empresa}</td>
                         <td>{lead.correo}</td>
-                        <td>{lead.giro}</td>
+                        <td>{lead.giroNormalizado}</td>
                         <td>{lead.huella}</td>
                         <td>{lead.clicks_calendly ? "✅" : "—"}</td>
                         <td>{new Date(lead.created_at).toLocaleDateString("es-MX")}</td>

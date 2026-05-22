@@ -1,7 +1,7 @@
 import { calcularHuella } from "./calculos"
 import { registrarClickCalendly } from "./supabase"
 
-function Resultado({ datos, nombre, empresa, correo }) {
+function Resultado({ datos, empresa, correo }) {
   const resultado = calcularHuella(datos)
 
   return (

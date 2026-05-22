@@ -1,37 +1,93 @@
 import { useState, useRef, useEffect } from "react"
 import { chatConOpenAI } from "./openai"
+import { normalizarDatosOperativos, calcularHuella } from "./calculos"
 import Resultado from "./resultado"
-import { calcularHuella } from "./calculos"
 import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
-import { guardarLeadSupabase, iniciarSesion, completarSesion, registrarClickCalendly } from "./supabase"
+import { guardarLeadSupabase, iniciarSesion, completarSesion } from "./supabase"
 
-// preguntas fallback con sus ids para mapear respuestas
-const PREGUNTAS_FALLBACK = [
-  { id: "kwh_mes", texto: "¿Cuánto pagan de luz al mes aproximadamente? (en pesos está bien)", conversion: (r) => parseFloat(r) / 2.8 || 3000 },
-  { id: "gas_kwh_mes", texto: "¿Usan gas en sus instalaciones? ¿Cuánto pagan al mes? (si no usan, escribe 0)", conversion: (r) => parseFloat(r) / 1.2 || 0 },
-  { id: "vehiculos_km_mes", texto: "¿Cuántos vehículos tiene la empresa? (escribe el número)", conversion: (r) => (parseFloat(r) || 0) * 2000 },
-  { id: "vuelos_mes", texto: "¿Sus empleados viajan en avión por trabajo? ¿Cuántos viajes al mes aproximadamente? (si no, escribe 0)", conversion: (r) => parseFloat(r) || 0 },
-  { id: "empleados_km_mes", texto: "¿La mayoría de empleados llega en coche o transporte público? (escribe cuántos en coche)", conversion: (r) => (parseFloat(r) || 0) * 20 * 22 },
-  { id: "residuos_kg_mes", texto: "¿Cuánta basura genera la empresa? (una bolsa al día = 5, un contenedor a la semana = 500)", conversion: (r) => parseFloat(r) || 100 },
-  { id: "agua_m3_mes", texto: "¿Consumen agua de forma significativa? ¿Cuántos m³ al mes aproximadamente? (si no sabes, escribe 0)", conversion: (r) => parseFloat(r) || 0 },
+const industrias = [
+  "Manufactura y Produccion Industrial",
+  "Produccion y Procesamiento de Alimentos",
+  "Restaurantes, Hoteles y Hospitalidad",
+  "Transporte",
+  "Retail y Comercio",
+  "Distribucion y Almacenamiento",
+  "Oficinas y Servicios Profesionales",
+  "Construccion e Infraestructura",
+  "Operacion y Administracion de Inmuebles",
+  "Agricultura y Produccion Primaria",
+  "Textil y Confeccion",
+  "Salud y Laboratorios",
+  "Otro",
 ]
 
+const rangosEmpleados = [
+  "1-5 empleados",
+  "6-20 empleados",
+  "21-50 empleados",
+  "51-100 empleados",
+  "101-250 empleados",
+  "Mas de 250 empleados",
+]
+
+const paises = [
+  "Mexico",
+  "Colombia",
+  "Brasil",
+  "Chile",
+  "Argentina",
+  "Peru",
+  "Otro pais LATAM",
+]
+
+function preguntaInicial(perfilEmpresa) {
+  const industria = perfilEmpresa.industria.toLowerCase()
+
+  if (industria.includes("alimentos") || industria.includes("restaurantes")) {
+    return "Listo. Empecemos con lo mas importante: en su operacion diaria, usan refrigeracion, cocina con gas, o ambas?"
+  }
+
+  if (industria.includes("transporte")) {
+    return "Listo. Empecemos con lo mas importante: cuantos vehiculos operan y que tan seguido se usan?"
+  }
+
+  if (industria.includes("distribucion") || industria.includes("almacenamiento")) {
+    return "Listo. Empecemos con lo mas importante: usan vehiculos, montacargas o refrigeracion en el almacen?"
+  }
+
+  if (industria.includes("retail") || industria.includes("comercio")) {
+    return "Listo. Empecemos con lo mas importante: operan tiendas fisicas, ecommerce, o ambos?"
+  }
+
+  if (industria.includes("manufactura") || industria.includes("textil")) {
+    return "Listo. Empecemos con lo mas importante: que tan intensivo es el uso de maquinaria o electricidad en su operacion?"
+  }
+
+  if (industria.includes("oficinas") || industria.includes("servicios")) {
+    return "Listo. Empecemos con lo mas importante: su oficina usa poca, media o mucha electricidad al mes?"
+  }
+
+  return "Listo. Empecemos con lo mas importante: en su operacion diaria, la electricidad es un gasto bajo, medio o alto?"
+}
+
 function Calculadora() {
-  const [mensajes, setMensajes] = useState([
-    { tipo: "bot", texto: "Hola, soy B2 👋 El asistente de Bono que te ayudará a conocer el impacto de carbono de tu empresa. ¿Con quién tengo el gusto? (nombre y apellido)" }
-  ])
+  const [mensajes, setMensajes] = useState([])
   const [input, setInput] = useState("")
   const [cargando, setCargando] = useState(false)
-  const [fase, setFase] = useState("nombre")
+  const [fase, setFase] = useState("inicio")
   const [datos, setDatos] = useState(null)
   const [nombreUsuario, setNombreUsuario] = useState("")
   const [empresaUsuario, setEmpresaUsuario] = useState("")
-  const [giroUsuario, setGiroUsuario] = useState("")
   const [correoUsuario, setCorreoUsuario] = useState("")
-  const [fallbackIndex, setFallbackIndex] = useState(0)
-  const [respuestasFallback, setRespuestasFallback] = useState({})
-  const [enFallback, setEnFallback] = useState(false)
+  const [perfilEmpresa, setPerfilEmpresa] = useState({
+    industria: "",
+    empleados: "",
+    pais: "",
+  })
   const mensajesRef = useRef(null)
+  const perfilCompleto = Boolean(
+    perfilEmpresa.industria && perfilEmpresa.empleados && perfilEmpresa.pais
+  )
 
   useEffect(() => {
     if (mensajesRef.current) {
@@ -39,28 +95,23 @@ function Calculadora() {
     }
   }, [mensajes])
 
-  const procesarFallback = (textoUsuario, nuevosMensajes, indexActual, respuestasActuales) => {
-    const preguntaActual = PREGUNTAS_FALLBACK[indexActual]
-    const valorConvertido = preguntaActual.conversion(textoUsuario)
-    const nuevasRespuestas = { ...respuestasActuales, [preguntaActual.id]: valorConvertido }
-    setRespuestasFallback(nuevasRespuestas)
+  const actualizarPerfil = (campo, valor) => {
+    setPerfilEmpresa((perfilActual) => ({
+      ...perfilActual,
+      [campo]: valor,
+    }))
+  }
 
-    const siguienteIndex = indexActual + 1
+  const iniciarChat = async () => {
+    if (!perfilCompleto) return
 
-    if (siguienteIndex < PREGUNTAS_FALLBACK.length) {
-      setFallbackIndex(siguienteIndex)
-      setMensajes([...nuevosMensajes, {
-        tipo: "bot",
-        texto: PREGUNTAS_FALLBACK[siguienteIndex].texto
-      }])
-    } else {
-      // todas las preguntas respondidas, calcula con datos reales del usuario
-      setDatos(nuevasRespuestas)
-      setFase("muro_empresa")
-      setMensajes([...nuevosMensajes, {
-        tipo: "bot",
-        texto: `¡Listo ${nombreUsuario}! Tu estimación está lista 🎉 ¿A nombre de qué empresa genero el reporte?`
-      }])
+    setFase("chat")
+    setMensajes([{ tipo: "bot", texto: preguntaInicial(perfilEmpresa) }])
+
+    try {
+      await iniciarSesion(perfilEmpresa.industria)
+    } catch (error) {
+      console.log("ERROR INICIANDO SESION:", error)
     }
   }
 
@@ -75,51 +126,38 @@ function Calculadora() {
     setCargando(true)
 
     try {
-      // si estamos en fallback Y no estamos en el muro, procesar fallback
-      if (enFallback && fase === "chat") {
-        procesarFallback(textoUsuario, nuevosMensajes, fallbackIndex, respuestasFallback)
-        setCargando(false)
-        return
-      }
-
-      if (fase === "nombre") {
-        setNombreUsuario(textoUsuario)
-        setFase("sector")
-        setMensajes([...nuevosMensajes, {
-          tipo: "bot",
-          texto: `¡Hola ${textoUsuario}! 😊 Para poder darte una estimación más precisa, ¿en qué sector está haciendo el cambio tu empresa? (manufactura, servicios, retail, logística, etc.)`
-        }])
-
-      } else if (fase === "sector") {
-        setGiroUsuario(textoUsuario)
-        iniciarSesion(textoUsuario)
-        setFase("chat")
-        setMensajes([...nuevosMensajes, {
-          tipo: "bot",
-          texto: `Perfecto, sector ${textoUsuario}. Ahora vamos a estimar tu huella de carbono con unas preguntas rápidas 🌱`
-        }])
-
-      } else if (fase === "chat") {
-        const respuesta = await chatConOpenAI(mensajes, textoUsuario)
+      if (fase === "chat") {
+        const respuesta = await chatConOpenAI(mensajes, textoUsuario, perfilEmpresa)
 
         if (respuesta.tipo === "datos") {
-          console.log("DATOS:", respuesta.datos)
-          setDatos(respuesta.datos)
-          setFase("muro_empresa")
+          const datosNormalizados = normalizarDatosOperativos(respuesta.datos, perfilEmpresa)
+
+          console.log("DATOS RAW DE OPENAI:", respuesta.datos)
+          console.log("DATOS NORMALIZADOS:", datosNormalizados)
+          setDatos(datosNormalizados)
+          setFase("muro_nombre")
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
-            texto: `¡Listo ${nombreUsuario}! Tu estimación está lista 🎉 ¿A nombre de qué empresa genero el reporte?`
+            texto: "Tu estimacion esta lista. Para generar el reporte, escribe tu nombre y apellido."
           }])
         } else {
           setMensajes([...nuevosMensajes, { tipo: "bot", texto: respuesta.texto }])
         }
+
+      } else if (fase === "muro_nombre") {
+        setNombreUsuario(textoUsuario)
+        setFase("muro_empresa")
+        setMensajes([...nuevosMensajes, {
+          tipo: "bot",
+          texto: "Gracias. A nombre de que empresa genero el reporte?"
+        }])
 
       } else if (fase === "muro_empresa") {
         setEmpresaUsuario(textoUsuario)
         setFase("muro_correo")
         setMensajes([...nuevosMensajes, {
           tipo: "bot",
-          texto: `¡Perfecto! Y por último, ¿cuál es tu correo empresarial? Así te enviamos el reporte completo 📩`
+          texto: "Perfecto. Cual es tu correo empresarial para enviarte el reporte completo?"
         }])
 
       } else if (fase === "muro_correo") {
@@ -128,7 +166,7 @@ function Calculadora() {
         if (!emailValido) {
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
-            texto: "Ese correo no parece válido 🤔 ¿Puedes verificarlo? Necesitamos un correo real para enviarte tu reporte."
+            texto: "Ese correo no parece valido. Puedes verificarlo?"
           }])
         } else {
           const resultado = calcularHuella(datos)
@@ -136,7 +174,7 @@ function Calculadora() {
             nombre: nombreUsuario,
             empresa: empresaUsuario,
             correo: textoUsuario,
-            giro: giroUsuario,
+            giro: perfilEmpresa.industria,
             huella: resultado.totalToneladas
           })
           setCorreoUsuario(textoUsuario)
@@ -144,27 +182,17 @@ function Calculadora() {
           setFase("resultado")
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
-            texto: `¡Listo ${nombreUsuario}! Aquí está la estimación de huella de carbono de ${empresaUsuario} 🌍`
+            texto: `Listo. Aqui esta la estimacion de huella de carbono de ${empresaUsuario}.`
           }])
         }
       }
 
     } catch (error) {
       console.log("ERROR:", error)
-
-      // activa fallback y empieza desde donde quedó
-      if (!enFallback) {
-        setEnFallback(true)
-        setFallbackIndex(0)
-        setRespuestasFallback({})
-        setMensajes([...nuevosMensajes, {
-          tipo: "bot",
-          texto: `Continuemos. ${PREGUNTAS_FALLBACK[0].texto}`
-        }])
-      } else {
-        // ya estaba en fallback y fallo de nuevo, intenta procesar igual
-        procesarFallback(textoUsuario, nuevosMensajes, fallbackIndex, respuestasFallback)
-      }
+      setMensajes([...nuevosMensajes, {
+        tipo: "bot",
+        texto: "Tuve un problema procesando esa respuesta. Intenta de nuevo con una respuesta aproximada."
+      }])
     }
 
     setCargando(false)
@@ -176,7 +204,6 @@ function Calculadora() {
 
   return (
     <div className="app">
-
       <div className="header">
         <a className="calculator-brand" href="/" aria-label="Volver al inicio de Bono">
           <img src={logo} alt="Bono2" />
@@ -187,44 +214,115 @@ function Calculadora() {
         </div>
       </div>
 
-      <div className="chat-container">
-        <div className="mensajes" ref={mensajesRef}>
-          {mensajes.map((msg, i) => (
-            <div key={i} style={{ alignSelf: msg.tipo === "bot" ? "flex-start" : "flex-end" }}>
-              <div className="remitente">
-                {msg.tipo === "bot" ? "B2" : nombreUsuario || "Tú"}
-              </div>
-              <div className={`burbuja ${msg.tipo === "bot" ? "burbuja-bot" : "burbuja-usuario"}`}>
-                {msg.texto}
-              </div>
-            </div>
-          ))}
+      {fase === "inicio" && (
+        <section className="onboarding-card" aria-labelledby="onboarding-title">
+          <div className="onboarding-copy">
+            <p className="onboarding-eyebrow">Antes de empezar</p>
+            <h1 id="onboarding-title">Cuentanos sobre tu empresa</h1>
+            <p>
+              Esto prepara la conversacion para tu tipo de operacion.
+              El calculo inicia en el siguiente paso.
+            </p>
+          </div>
 
-          {cargando && (
-            <div style={{ alignSelf: "flex-start" }}>
-              <div className="remitente">B2</div>
-              <div className="burbuja burbuja-bot">
-                <span>...</span>
-              </div>
-            </div>
-          )}
-        </div>
+          <div className="onboarding-form">
+            <label className="select-field">
+              <span>Industria</span>
+              <select
+                value={perfilEmpresa.industria}
+                onChange={(e) => actualizarPerfil("industria", e.target.value)}
+              >
+                <option value="">Selecciona una industria</option>
+                {industrias.map((industria) => (
+                  <option key={industria} value={industria}>
+                    {industria}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <div className="input-area">
-          <input
-            className="input-texto"
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={cargando ? "B2 está escribiendo..." : "Escribe tu respuesta..."}
-            disabled={cargando}
-          />
-          <button className="btn-enviar" onClick={enviarMensaje} disabled={cargando}>
-            Enviar →
+            <label className="select-field">
+              <span>Numero de empleados</span>
+              <select
+                value={perfilEmpresa.empleados}
+                onChange={(e) => actualizarPerfil("empleados", e.target.value)}
+              >
+                <option value="">Selecciona un rango</option>
+                {rangosEmpleados.map((rango) => (
+                  <option key={rango} value={rango}>
+                    {rango}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="select-field">
+              <span>En que pais opera principalmente tu empresa?</span>
+              <select
+                value={perfilEmpresa.pais}
+                onChange={(e) => actualizarPerfil("pais", e.target.value)}
+              >
+                <option value="">Selecciona un pais</option>
+                {paises.map((pais) => (
+                  <option key={pais} value={pais}>
+                    {pais}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <button
+            className="btn-cta onboarding-button"
+            type="button"
+            disabled={!perfilCompleto}
+            onClick={iniciarChat}
+          >
+            Continuar
           </button>
+        </section>
+      )}
+
+      {fase !== "inicio" && (
+        <div className="chat-container">
+          <div className="mensajes" ref={mensajesRef}>
+            {mensajes.map((msg, i) => (
+              <div key={i} className={`mensaje mensaje-${msg.tipo}`}>
+                <div className="remitente">
+                  {msg.tipo === "bot" ? "B2" : nombreUsuario || "Tu"}
+                </div>
+                <div className={`burbuja ${msg.tipo === "bot" ? "burbuja-bot" : "burbuja-usuario"}`}>
+                  {msg.texto}
+                </div>
+              </div>
+            ))}
+
+            {cargando && (
+              <div className="mensaje mensaje-bot">
+                <div className="remitente">B2</div>
+                <div className="burbuja burbuja-bot">
+                  <span>...</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="input-area">
+            <input
+              className="input-texto"
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={cargando ? "B2 esta escribiendo..." : "Escribe tu respuesta..."}
+              disabled={cargando}
+            />
+            <button className="btn-enviar" onClick={enviarMensaje} disabled={cargando}>
+              Enviar
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {fase === "resultado" && datos && (
         <Resultado
@@ -234,7 +332,6 @@ function Calculadora() {
           correo={correoUsuario}
         />
       )}
-
     </div>
   )
 }
