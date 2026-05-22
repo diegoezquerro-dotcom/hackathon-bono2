@@ -417,3 +417,9 @@ body {
 .btn-cta:hover {
   opacity: 0.85;
 }
+
+a.btn-cta {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}

@@ -17,3 +17,34 @@ export async function guardarLeadSupabase({ nombre, empresa, correo, giro, huell
 
   return true
 }
+
+export async function iniciarSesion(giro) {
+  const inicio = Date.now()
+  window._sesionInicio = inicio
+  window._sesionGiro = giro
+}
+
+export async function completarSesion() {
+  if (!window._sesionInicio) return
+
+  const tiempoSegundos = Math.round((Date.now() - window._sesionInicio) / 1000)
+
+  const { error } = await supabase
+    .from("sesiones")
+    .insert([{
+      giro: window._sesionGiro || "desconocido",
+      tiempo_segundos: tiempoSegundos,
+      completo: true
+    }])
+
+  if (error) console.log("Error guardando sesion:", error)
+}
+
+export async function registrarClickCalendly(correo) {
+  const { error } = await supabase
+    .from("leads")
+    .update({ clicks_calendly: true })
+    .eq("correo", correo)
+
+  if (error) console.log("Error registrando click:", error)
+}

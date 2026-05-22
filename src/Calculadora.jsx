@@ -3,8 +3,7 @@ import { chatConOpenAI } from "./openai"
 import Resultado from "./resultado"
 import { calcularHuella } from "./calculos"
 import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
-import { guardarLeadSupabase } from "./supabase"
-
+import { guardarLeadSupabase, iniciarSesion, completarSesion } from "./supabase"
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
     { tipo: "bot", texto: "Hola, soy B2 👋 El asistente de Bono que te ayudará a conocer el impacto de carbono de tu empresa. ¿Con quién tengo el gusto? (nombre y apellido)" }
@@ -48,6 +47,7 @@ function Calculadora() {
       // fase 2 - pide sector
       } else if (fase === "sector") {
         setGiroUsuario(textoUsuario)
+        iniciarSesion(textoUsuario)
         setFase("chat")
         setMensajes([...nuevosMensajes, {
           tipo: "bot",
@@ -73,6 +73,7 @@ function Calculadora() {
       // fase 4 - pide empresa
       } else if (fase === "muro_empresa") {
         setEmpresaUsuario(textoUsuario)
+        await completarSesion()
         setFase("muro_correo")
         setMensajes([...nuevosMensajes, {
           tipo: "bot",
