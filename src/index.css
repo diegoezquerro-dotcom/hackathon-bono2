@@ -569,3 +569,188 @@ a.btn-cta {
   margin-top: 8px;
   text-align: center;
 }
+
+/* admin */
+.admin-shell {
+  min-height: 100vh;
+  background: #080808;
+  color: #F1F1F1;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  border-bottom: 1px solid #222;
+}
+
+.admin-logout {
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: #888;
+  font-family: 'Lufga', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-logout:hover {
+  border-color: #666;
+  color: #F1F1F1;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 16px 32px 0;
+  border-bottom: 1px solid #222;
+}
+
+.admin-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 20px;
+  color: #888;
+  font-family: 'Lufga', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+
+.admin-tab:hover {
+  color: #F1F1F1;
+}
+
+.admin-tab.active {
+  color: #F1F1F1;
+  border-bottom-color: #7243FD;
+}
+
+.admin-content {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-tab-desc {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-metricas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.metrica-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metrica-numero {
+  font-size: 48px;
+  font-weight: 700;
+  background: var(--gradiente);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.metrica-label {
+  font-size: 13px;
+  color: #888;
+}
+
+.admin-chart-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.admin-chart-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.admin-chart-desc {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.clicks-giro-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clicks-giro-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.clicks-giro-nombre {
+  color: #F1F1F1;
+}
+
+.clicks-giro-count {
+  color: #7243FD;
+  font-weight: 600;
+}
+
+.admin-filtro {
+  margin-bottom: 16px;
+}
+
+.admin-tabla-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #222;
+}
+
+.admin-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-tabla th {
+  background: #111;
+  padding: 12px 16px;
+  text-align: left;
+  color: #888;
+  font-weight: 600;
+  border-bottom: 1px solid #222;
+}
+
+.admin-tabla td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #111;
+  color: #F1F1F1;
+}
+
+.admin-tabla tr:hover td {
+  background: #111;
+}

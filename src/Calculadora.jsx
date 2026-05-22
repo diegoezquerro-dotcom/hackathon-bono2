@@ -3,21 +3,22 @@ import { chatConOpenAI } from "./openai"
 import Resultado from "./resultado"
 import { calcularHuella } from "./calculos"
 import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
-import { guardarLeadSupabase, iniciarSesion, completarSesion } from "./supabase"
+import { guardarLeadSupabase, iniciarSesion, completarSesion, registrarClickCalendly } from "./supabase"
+
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
     { tipo: "bot", texto: "Hola, soy B2 👋 El asistente de Bono que te ayudará a conocer el impacto de carbono de tu empresa. ¿Con quién tengo el gusto? (nombre y apellido)" }
   ])
   const [input, setInput] = useState("")
   const [cargando, setCargando] = useState(false)
-  const [fase, setFase] = useState("nombre") // nombre, sector, chat, muro_empresa, muro_correo, resultado
+  const [fase, setFase] = useState("nombre")
   const [datos, setDatos] = useState(null)
   const [nombreUsuario, setNombreUsuario] = useState("")
   const [empresaUsuario, setEmpresaUsuario] = useState("")
   const [giroUsuario, setGiroUsuario] = useState("")
+  const [correoUsuario, setCorreoUsuario] = useState("")
   const mensajesRef = useRef(null)
 
-  // scroll automatico al ultimo mensaje
   useEffect(() => {
     if (mensajesRef.current) {
       mensajesRef.current.scrollTop = mensajesRef.current.scrollHeight
@@ -35,7 +36,6 @@ function Calculadora() {
     setCargando(true)
 
     try {
-      // fase 1 - pide nombre
       if (fase === "nombre") {
         setNombreUsuario(textoUsuario)
         setFase("sector")
@@ -44,7 +44,6 @@ function Calculadora() {
           texto: `¡Hola ${textoUsuario}! 😊 Para poder darte una estimación más precisa, ¿en qué sector está haciendo el cambio tu empresa? (manufactura, servicios, retail, logística, etc.)`
         }])
 
-      // fase 2 - pide sector
       } else if (fase === "sector") {
         setGiroUsuario(textoUsuario)
         iniciarSesion(textoUsuario)
@@ -54,7 +53,6 @@ function Calculadora() {
           texto: `Perfecto, sector ${textoUsuario}. Ahora vamos a estimar tu huella de carbono con unas preguntas rápidas 🌱`
         }])
 
-      // fase 3 - chat con openai
       } else if (fase === "chat") {
         const respuesta = await chatConOpenAI(mensajes, textoUsuario)
 
@@ -70,17 +68,14 @@ function Calculadora() {
           setMensajes([...nuevosMensajes, { tipo: "bot", texto: respuesta.texto }])
         }
 
-      // fase 4 - pide empresa
       } else if (fase === "muro_empresa") {
         setEmpresaUsuario(textoUsuario)
-        await completarSesion()
         setFase("muro_correo")
         setMensajes([...nuevosMensajes, {
           tipo: "bot",
           texto: `¡Perfecto! Y por último, ¿cuál es tu correo empresarial? Así te enviamos el reporte completo 📩`
         }])
 
-      // fase 5 - pide correo y guarda lead
       } else if (fase === "muro_correo") {
         const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(textoUsuario)
 
@@ -98,6 +93,8 @@ function Calculadora() {
             giro: giroUsuario,
             huella: resultado.totalToneladas
           })
+          setCorreoUsuario(textoUsuario)
+          await completarSesion()
           setFase("resultado")
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
@@ -109,7 +106,6 @@ function Calculadora() {
     } catch (error) {
       console.log("ERROR:", error)
 
-      // fallback si openai falla
       const preguntasFallback = [
         "¿Cuánto pagan de luz al mes aproximadamente? (en pesos está bien)",
         "¿Usan gas en sus instalaciones? ¿Cuánto pagan al mes?",
@@ -207,7 +203,12 @@ function Calculadora() {
       </div>
 
       {fase === "resultado" && datos && (
-        <Resultado datos={datos} nombre={nombreUsuario} empresa={empresaUsuario} />
+        <Resultado
+          datos={datos}
+          nombre={nombreUsuario}
+          empresa={empresaUsuario}
+          correo={correoUsuario}
+        />
       )}
 
     </div>
