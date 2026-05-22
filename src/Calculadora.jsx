@@ -330,6 +330,7 @@ function Calculadora() {
           nombre={nombreUsuario}
           empresa={empresaUsuario}
           correo={correoUsuario}
+          giro={perfilEmpresa.industria}
         />
       )}
     </div>

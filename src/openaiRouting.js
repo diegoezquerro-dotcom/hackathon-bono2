@@ -241,9 +241,9 @@ const signalStrategies = {
   electricidad: {
     ask: {
       question:
-        "Tienes el consumo mensual de luz en kWh? Si no, dime cuanto pagan de luz al mes aproximadamente.",
+        "¿Tienes el consumo mensual de luz en kWh? Si no, dime cuánto pagan de luz al mes aproximadamente.",
       fallback:
-        "Si no tienes ese dato, la luz es un gasto bajo, medio o alto para su operacion?",
+        "Si no tienes ese dato, ¿la luz es un gasto bajo, medio o alto para su operación?",
     },
     extract: {
       targetFields: [
@@ -257,11 +257,11 @@ const signalStrategies = {
   combustibles: {
     ask: {
       question:
-        "Que combustible usan principalmente: gas, gasolina, diesel, lena/carbon u otro? Si sabes, dime cuanto compran o gastan al mes.",
+        "¿Qué combustible usan principalmente: gas, gasolina, diésel, leña/carbón u otro? Si sabes, dime cuánto compran o gastan al mes.",
       fallback:
-        "Si no sabes la cantidad, el uso de combustible es bajo, medio o alto?",
+        "Si no sabes la cantidad, ¿el uso de combustible es bajo, medio o alto?",
       omit:
-        "No preguntar subtipos tecnicos de DEFRA. Solo clasificar como gaseoso, liquido o solido.",
+        "No preguntar subtipos técnicos de DEFRA. Solo clasificar como gaseoso, líquido o sólido.",
     },
     extract: {
       targetFields: [
@@ -296,9 +296,9 @@ const signalStrategies = {
   vehiculos: {
     ask: {
       question:
-        "Que vehiculos usan para operar: autos/motos, vans o camiones pesados? Son refrigerados o normales?",
+        "¿Qué vehículos usan para operar: autos/motos, vans o camiones pesados? ¿Son refrigerados o normales?",
       fallback:
-        "Si no sabes el detalle, cuantos vehiculos usan y el uso es bajo, medio o alto?",
+        "Si no sabes el detalle, ¿cuántos vehículos usan y el uso es bajo, medio o alto?",
     },
     extract: {
       targetFields: [
@@ -324,11 +324,11 @@ const signalStrategies = {
   refrigeracion: {
     ask: {
       question:
-        "Usan refrigeradores, congeladores, camaras frias o aire acondicionado fuerte? Es algo pequeno o una parte importante de la operacion?",
+        "¿Usan refrigeradores, congeladores, cámaras frías o aire acondicionado fuerte? ¿Es algo pequeño o una parte importante de la operación?",
       fallback:
-        "La refrigeracion es baja, media o alta dentro de la operacion?",
+        "¿La refrigeración es baja, media o alta dentro de la operación?",
       omit:
-        "No preguntar tipo de gas refrigerante ni fugas. Demasiado tecnico para el MVP.",
+        "No preguntar tipo de gas refrigerante ni fugas. Demasiado técnico para el MVP.",
     },
     extract: {
       targetFields: [
@@ -341,9 +341,9 @@ const signalStrategies = {
   materiales: {
     ask: {
       question:
-        "Cuales son los 2-3 materiales o productos que mas compran: construccion, organicos, electronicos, metal, plastico/papel u otros?",
+        "¿Cuáles son los 2-3 materiales o productos que más compran: construcción, orgánicos, electrónicos, metal, plástico/papel u otros?",
       fallback:
-        "Si no sabes cantidades, compran pocos, medios o muchos materiales fisicos para operar?",
+        "Si no sabes cantidades, ¿compran pocos, medios o muchos materiales físicos para operar?",
     },
     extract: {
       targetFields: [
@@ -378,11 +378,11 @@ const signalStrategies = {
   residuos: {
     ask: {
       question:
-        "Que residuo generan mas: construccion/escombro, basura general, organico, electronicos, metal, plastico/papel u otro? Se recicla, composta o va a basura general?",
+        "¿Qué residuo generan más: construcción/escombro, basura general, orgánico, electrónicos, metal, plástico/papel u otro? ¿Se recicla, composta o va a basura general?",
       fallback:
-        "Si no tienes el dato, los residuos son bajos, medios o altos para su operacion?",
+        "Si no tienes el dato, ¿los residuos son bajos, medios o altos para su operación?",
       omit:
-        "Omitir open-loop, closed-loop, incineration with energy recovery y anaerobic digestion en la pregunta. Mapear internamente si hay informacion suficiente.",
+        "Omitir open-loop, closed-loop, incineration with energy recovery y anaerobic digestion en la pregunta. Mapear internamente si hay información suficiente.",
     },
     extract: {
       targetFields: [
@@ -417,9 +417,9 @@ const signalStrategies = {
   viajes: {
     ask: {
       question:
-        "Hacen vuelos de trabajo? Si si, cuantos al mes o al ano aproximadamente?",
+        "¿Hacen vuelos de trabajo? Si sí, ¿cuántos al mes o al año aproximadamente?",
       fallback:
-        "Si no tienes el numero exacto, los vuelos de trabajo son raros, ocasionales o frecuentes?",
+        "Si no tienes el número exacto, ¿los vuelos de trabajo son raros, ocasionales o frecuentes?",
       omit:
         "No preguntar clase de vuelo ni distancia exacta para MVP.",
     },
@@ -435,9 +435,9 @@ const signalStrategies = {
   agua: {
     ask: {
       question:
-        "El uso de agua es una parte importante de la operacion? Si sabes, dime cuantos m3 usan al mes o cuanto pagan.",
+        "¿El uso de agua es una parte importante de la operación? Si sabes, dime cuántos m3 usan al mes o cuánto pagan.",
       fallback:
-        "Si no tienes el dato, el uso de agua es bajo, medio o alto?",
+        "Si no tienes el dato, ¿el uso de agua es bajo, medio o alto?",
       omit:
         "No preguntar agua por defecto en oficinas, retail simple o servicios profesionales.",
     },
