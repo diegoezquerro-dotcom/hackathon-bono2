@@ -213,9 +213,9 @@ function Calculadora() {
           <div className="onboarding-copy">
             <p className="onboarding-eyebrow">Antes de empezar</p>
             <h1 id="onboarding-title">Cuentanos sobre tu empresa</h1>
-            <p>
-              Esto prepara la conversacion para tu tipo de operacion.
-              El calculo inicia en el siguiente paso.
+            <p>            
+              B2 preparará preguntas específicas para tu tipo de operación,
+               así la estimación es mucho más precisa.
             </p>
           </div>
 
