@@ -113,7 +113,9 @@ const beforeResults = [
 const afterResults = [
   'Desglose por Alcance 1, 2 y 3',
   'Clasificación visual de impacto',
-  'Opción para agendar una asesoría personalizada con Bono',
+  'Explicación de tus principales fuentes de emisiones',
+  'Primeras oportunidades de reducción',
+  'Opción para agendar una asesoría con Bono',
 ];
 
 function Header() {
@@ -145,7 +147,7 @@ function Hero() {
         <p className="hero-time">En menos de 3 minutos</p>
         <div className="cta-stack">
           <a className="primary-cta" href={calculatorHref}>
-            ¡Conoce B2!
+            Calcular mi huella
             <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -164,9 +166,10 @@ function PainPoint() {
       <div className="section-copy">
         <h2 id="pain-title">¿Te pidieron información de sustentabilidad y no sabes qué responder?</h2>
         <p>
-          Las empresas grandes ya le están pidiendo a sus proveedores datos de sustentabilidad, y la mayoría
-           de las PyMEs no sabe qué responder. Si te llegó un cuestionario de carbono y no sabes por dónde empezar, 
-           esta calculadora te da una primera estimación clara en menos de 3 minutos.
+          Cada vez más empresas grandes solicitan a sus proveedores datos sobre emisiones, energía,
+          transporte, residuos y prácticas de reducción. Muchas PyMEs reciben cuestionarios de
+          sustentabilidad sin tener un inventario formal de carbono. Esta calculadora te ayuda a
+          obtener una primera estimación clara y accionable.
         </p>
       </div>
       <div className="pain-cards">
@@ -213,7 +216,7 @@ function Requirements() {
         <p>Puedes completar el cálculo con información aproximada de tu empresa.</p>
         <p className="microcopy">
           Mientras mejores sean tus datos, más confiable será la estimación. Si no tienes un dato
-          exacto, no te preocupes, B2 puede trabajar con aproximaciones.
+          exacto, la herramienta puede trabajar con aproximaciones.
         </p>
       </div>
       <ul className="checklist" aria-label="Información que puedes tener a la mano">
@@ -252,7 +255,7 @@ function Faq() {
   return (
     <section className="faq section-shell" id="faq" aria-labelledby="faq-title">
       <div className="section-heading wide">
-        <h2 id="faq-title">Preguntas frecuentes </h2>
+        <h2 id="faq-title">Preguntas frecuentes sobre huella de carbono empresarial</h2>
       </div>
       <div className="faq-list">
         {faqs.map((faq) => (
@@ -294,7 +297,7 @@ function ResultsPreview() {
   return (
     <section className="results section-grid" aria-labelledby="results-title">
       <div className="section-copy">
-        <h2 id="results-title">¿Qué recibirás al terminar?</h2>
+        <h2 id="results-title">Qué recibirás al terminar</h2>
         <div className="result-lists">
           <div>
             <h3>Antes de registrarte</h3>

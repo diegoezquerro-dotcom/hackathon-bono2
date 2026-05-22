@@ -117,65 +117,42 @@ function Calculadora() {
 
         if (respuesta.tipo === "datos") {
           const datosNormalizados = normalizarDatosOperativos(respuesta.datos, perfilEmpresa)
+
           console.log("DATOS RAW DE OPENAI:", respuesta.datos)
           console.log("DATOS NORMALIZADOS:", datosNormalizados)
           setDatos(datosNormalizados)
           setFase("muro_nombre")
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
-            texto: "¡Tu estimación está lista! 🌱 Para generar el reporte, escribe tu nombre y apellido."
+            texto: "Tu estimacion esta lista. Para generar el reporte, escribe tu nombre y apellido."
           }])
         } else {
           setMensajes([...nuevosMensajes, { tipo: "bot", texto: respuesta.texto }])
         }
 
       } else if (fase === "muro_nombre") {
-        const esObjecion = /por qu[eé]|segur|datos|privac|para qu[eé]|no quiero|qu[eé] har[aá]n|compartir|nombre/i.test(textoUsuario)
-        const pareceNombre = textoUsuario.trim().split(" ").length >= 1 && textoUsuario.length < 50 && !textoUsuario.includes("?")
+        setNombreUsuario(textoUsuario)
+        setFase("muro_empresa")
+        setMensajes([...nuevosMensajes, {
+          tipo: "bot",
+          texto: "Gracias. A nombre de que empresa genero el reporte?"
+        }])
 
-        if (esObjecion || !pareceNombre) {
-          setMensajes([...nuevosMensajes, {
-            tipo: "bot",
-            texto: "Entiendo. 🙂 Solo necesito tu nombre para personalizar el reporte, no lo compartimos con nadie. Puedes poner solo tu nombre de pila si prefieres."
-          }])
-        } else {
-          setNombreUsuario(textoUsuario)
-          setFase("muro_empresa")
-          setMensajes([...nuevosMensajes, {
-            tipo: "bot",
-            texto: `Gracias, ${textoUsuario.split(" ")[0]}. ¿A nombre de qué empresa genero el reporte?`
-          }])
-        }
       } else if (fase === "muro_empresa") {
-        const esObjecion = /por qu[eé]|segur|datos|privac|para qu[eé]|no quiero|qu[eé] har[aá]n|compartir/i.test(textoUsuario)
-
-        if (esObjecion) {
-          setMensajes([...nuevosMensajes, {
-            tipo: "bot",
-            texto: "Entiendo la duda, es totalmente válida. 🔒 Solo usamos el nombre de tu empresa para personalizar tu reporte. No compartimos tu información con terceros ni te enviamos spam. Si prefieres, puedes poner solo el giro, como 'Empresa de distribución'."
-          }])
-        } else {
-          setEmpresaUsuario(textoUsuario)
-          setFase("muro_correo")
-          setMensajes([...nuevosMensajes, {
-            tipo: "bot",
-            texto: "¡Perfecto! ¿Y cuál es tu correo empresarial para enviarte el reporte completo? 📩"
-          }])
-        }
+        setEmpresaUsuario(textoUsuario)
+        setFase("muro_correo")
+        setMensajes([...nuevosMensajes, {
+          tipo: "bot",
+          texto: "Perfecto. Cual es tu correo empresarial para enviarte el reporte completo?"
+        }])
 
       } else if (fase === "muro_correo") {
-        const esObjecion = /por qu[eé]|segur|datos|privac|para qu[eé]|no quiero|spam|correo personal/i.test(textoUsuario)
         const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(textoUsuario)
 
-        if (esObjecion) {
+        if (!emailValido) {
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
-            texto: "Completamente válido. 🔒 Tu correo solo se usa para enviarte el reporte, nunca para spam ni para compartir con terceros. Si prefieres, puedes usar un correo personal, también funciona."
-          }])
-        } else if (!emailValido) {
-          setMensajes([...nuevosMensajes, {
-            tipo: "bot",
-            texto: "Ese correo no parece válido. ¿Puedes verificarlo? Necesitamos un correo real para enviarte tu reporte."
+            texto: "Ese correo no parece valido. Puedes verificarlo?"
           }])
         } else {
           const resultado = calcularHuella(datos)
@@ -191,7 +168,7 @@ function Calculadora() {
           setFase("resultado")
           setMensajes([...nuevosMensajes, {
             tipo: "bot",
-            texto: `¡Listo! Aquí está la estimación de huella de carbono de ${empresaUsuario}. 🌍`
+            texto: `Listo. Aqui esta la estimacion de huella de carbono de ${empresaUsuario}.`
           }])
         }
       }
@@ -228,9 +205,9 @@ function Calculadora() {
           <div className="onboarding-copy">
             <p className="onboarding-eyebrow">Antes de empezar</p>
             <h1 id="onboarding-title">Cuentanos sobre tu empresa</h1>
-            <p>            
-              B2 preparará preguntas específicas para tu tipo de operación,
-               así la estimación es mucho más precisa.
+            <p>
+              Esto prepara la conversacion para tu tipo de operacion.
+              El calculo inicia en el siguiente paso.
             </p>
           </div>
 
@@ -344,7 +321,6 @@ function Calculadora() {
           nombre={nombreUsuario}
           empresa={empresaUsuario}
           correo={correoUsuario}
-          giro={perfilEmpresa.industria}
         />
       )}
     </div>

@@ -241,7 +241,7 @@ const signalStrategies = {
   electricidad: {
     ask: {
       question:
-        "Tienes el consumo mensual de luz en kWh? Si no, dime cuanto pagan de luz al mes aproximadamente.",
+        "¿Tienes el consumo mensual de luz en kWh? Si no, dime cuánto pagan de luz al mes aproximadamente.",
       fallback:
         "Si no tienes kWh ni monto exacto, dime un rango aproximado del recibo mensual de luz en moneda local.",
     },
@@ -258,11 +258,11 @@ const signalStrategies = {
   combustibles: {
     ask: {
       question:
-        "Que combustible usan principalmente: gas, gasolina, diesel, lena/carbon u otro? Si sabes, dime cuanto compran o gastan al mes.",
+        "¿Qué combustible usan principalmente: gas, gasolina, diésel, leña/carbón u otro? Si sabes, dime cuánto compran o gastan al mes.",
       fallback:
-        "Si no sabes la cantidad exacta, dime cada cuanto compran combustible y cuanto suelen gastar cada vez.",
+        "Si no sabes la cantidad exacta, dime cada cuánto compran combustible y cuánto suelen gastar cada vez.",
       omit:
-        "No preguntar subtipos tecnicos de DEFRA. Solo clasificar como gaseoso, liquido o solido.",
+        "No preguntar subtipos técnicos de DEFRA. Solo clasificar como gaseoso, líquido o sólido.",
     },
     extract: {
       targetFields: [
@@ -297,9 +297,9 @@ const signalStrategies = {
   vehiculos: {
     ask: {
       question:
-        "Cuantos vehiculos usan para operar, de que tipo son y aproximadamente cuantos km recorren al mes?",
+        "¿Cuántos vehículos usan para operar, de qué tipo son y aproximadamente cuántos km recorren al mes?",
       fallback:
-        "Si no sabes los km, dime cuantos vehiculos son y si salen pocas veces, casi diario o todo el dia.",
+        "Si no sabes los km, dime cuántos vehículos son y si salen pocas veces, casi diario o todo el día.",
     },
     extract: {
       targetFields: [
@@ -325,11 +325,11 @@ const signalStrategies = {
   refrigeracion: {
     ask: {
       question:
-        "Cuantos refrigeradores, congeladores, camaras frias o equipos de aire acondicionado fuerte usan?",
+        "¿Cuántos refrigeradores, congeladores, cámaras frías o equipos de aire acondicionado fuerte usan?",
       fallback:
-        "Si no sabes el consumo, dime si son pocos equipos, varios equipos o si la refrigeracion es central para operar.",
+        "Si no sabes el consumo, dime si son pocos equipos, varios equipos o si la refrigeración es central para operar.",
       omit:
-        "No preguntar tipo de gas refrigerante ni fugas. Demasiado tecnico para el MVP.",
+        "No preguntar tipo de gas refrigerante ni fugas. Demasiado técnico para el MVP.",
     },
     extract: {
       targetFields: [
@@ -342,9 +342,9 @@ const signalStrategies = {
   materiales: {
     ask: {
       question:
-        "Cuales son los 2-3 materiales o productos fisicos que mas compran y, si sabes, cuantas toneladas compran al mes?",
+        "¿Cuáles son los 2-3 materiales o productos físicos que más compran y, si sabes, cuántas toneladas compran al mes?",
       fallback:
-        "Si no sabes toneladas, dime como compran esos materiales al mes: sacos, cajas, pallets, piezas o algun monto aproximado; si no, si el volumen mensual es bajo, medio o alto.",
+        "Si no sabes toneladas, dime cómo compran esos materiales al mes: sacos, cajas, pallets, piezas o algún monto aproximado; si no, si el volumen mensual es bajo, medio o alto.",
     },
     extract: {
       targetFields: [
@@ -378,9 +378,11 @@ const signalStrategies = {
   residuos: {
     ask: {
       question:
-        "Que residuo generan mas: construccion/escombro, basura general, organico, electronicos, metal, plastico/papel u otro? Si sabes, dime cuantas toneladas generan al mes.",
+        "¿Qué residuo generan más: construcción/escombro, basura general, orgánico, electrónicos, metal, plástico/papel u otro? Si sabes, dime cuántas toneladas generan al mes y si se recicla, composta o va a basura general.",
       fallback:
-        "Si no sabes toneladas, dime cada cuanto lo recogen y cuantas bolsas, botes o contenedores llenan por recoleccion; si no, si generan poco, medio o mucho residuo al mes.",
+        "Si no sabes toneladas, dime cada cuánto lo recogen y cuántas bolsas, botes o contenedores llenan por recolección; si no, si generan poco, medio o mucho residuo al mes.",
+      omit:
+        "Omitir open-loop, closed-loop, incineration with energy recovery y anaerobic digestion en la pregunta. Mapear internamente si hay información suficiente.",
     },
     extract: {
       targetFields: [
@@ -408,9 +410,9 @@ const signalStrategies = {
   viajes: {
     ask: {
       question:
-        "Hacen vuelos de trabajo? Si si, cuantos al mes o al ano aproximadamente?",
+        "¿Hacen vuelos de trabajo? Si sí, ¿cuántos al mes o al año aproximadamente?",
       fallback:
-        "Si no tienes el numero exacto, dime si suelen volar cada mes, cada trimestre, una o dos veces al ano, o casi nunca.",
+        "Si no tienes el número exacto, dime si suelen volar cada mes, cada trimestre, una o dos veces al año, o casi nunca.",
       omit:
         "No preguntar clase de vuelo ni distancia exacta para MVP.",
     },
@@ -426,9 +428,9 @@ const signalStrategies = {
   agua: {
     ask: {
       question:
-        "El uso de agua es una parte importante de la operacion? Si sabes, dime cuantos m3 usan al mes o cuanto pagan.",
+        "¿El uso de agua es una parte importante de la operación? Si sabes, dime cuántos m3 usan al mes o cuánto pagan.",
       fallback:
-        "Si no sabes m3 ni monto, dime para que usan agua en la operacion y con que frecuencia; si no, si el uso mensual es bajo, medio o alto.",
+        "Si no sabes m3 ni monto, dime para qué usan agua en la operación y con qué frecuencia; si no, si el uso mensual es bajo, medio o alto.",
       omit:
         "No preguntar agua por defecto en oficinas, retail simple o servicios profesionales.",
     },

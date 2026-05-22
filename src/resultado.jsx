@@ -1,29 +1,27 @@
-import { useEffect, useState } from "react"
 import { calcularHuella } from "./calculos"
-import { registrarClickCalendly, supabase } from "./supabase"
+import { registrarClickCalendly } from "./supabase"
 
-function Resultado({ datos, empresa, correo, giro }) {
+function Resultado({ datos, empresa, correo }) {
   const resultado = calcularHuella(datos)
   const paisElectricidad = datos.pais || "el pais seleccionado"
   const totalAlcances = resultado.totalToneladas || 0
-  const [ranking, setRanking] = useState(null)
   const alcances = [
     {
-      label: "Alcance 1 - Emisiones directas",
+      label: "Alcance 1 — Emisiones directas",
       shortLabel: "Alcance 1",
       description: "Emisiones directas de fuentes que controla la empresa, como vehiculos propios, combustion de gas o combustibles.",
       value: resultado.alcance1,
       color: "#3001F7",
     },
     {
-      label: "Alcance 2 - Electricidad",
+      label: "Alcance 2 — Electricidad",
       shortLabel: "Alcance 2",
       description: "Emisiones indirectas asociadas a la electricidad comprada y consumida por la empresa.",
       value: resultado.alcance2,
       color: "#7243FD",
     },
     {
-      label: "Alcance 3 - Cadena de valor",
+      label: "Alcance 3 — Cadena de valor",
       shortLabel: "Alcance 3",
       description: "Emisiones indirectas de la cadena de valor, como transporte externo, residuos, viajes, proveedores y otras actividades relacionadas.",
       value: resultado.alcance3,
@@ -42,60 +40,9 @@ function Resultado({ datos, empresa, correo, giro }) {
         .join(", ")
     : "#f1eff8 0% 100%"
 
-  useEffect(() => {
-    if (!giro || !resultado.totalToneladas) return
-
-    const calcularRanking = async () => {
-      const { data: leads } = await supabase
-        .from("leads")
-        .select("huella")
-        .eq("giro", giro)
-        .not("huella", "is", null)
-
-      if (!leads || leads.length < 2) return
-
-      const huellas = leads.map((lead) => lead.huella).sort((a, b) => a - b)
-      const total = huellas.length
-      const posicion = huellas.filter((huella) => huella <= resultado.totalToneladas).length
-      const percentil = Math.round((1 - posicion / total) * 100)
-
-      setRanking({ posicion, total, percentil })
-    }
-
-    calcularRanking()
-  }, [giro, resultado.totalToneladas])
-
-  const getMensajeRanking = () => {
-    if (!ranking) return null
-    const { percentil, posicion, total } = ranking
-
-    if (percentil <= 20) {
-      return {
-        emoji: "🏆",
-        mensaje: `Estas en el top ${percentil + 1}% de empresas mas sustentables de tu sector.`,
-        cta: "Sigue asi. Una asesoria con Bono puede llevarte al #1.",
-      }
-    }
-
-    if (percentil <= 50) {
-      return {
-        emoji: "📈",
-        mensaje: `Estas en el lugar ${posicion} de ${total} empresas de tu sector.`,
-        cta: "Estas en la mitad superior. Con Bono podrias entrar al top 20%.",
-      }
-    }
-
-    return {
-      emoji: "💡",
-      mensaje: `Hay ${total - posicion} empresas de tu sector con menor huella que tu.`,
-      cta: "Bono puede ayudarte a reducirla y mejorar tu posicion.",
-    }
-  }
-
-  const infoRanking = getMensajeRanking()
-
   return (
     <div className="resultado-container">
+
       <div className="resultado-hero">
         <p className="resultado-label">La huella de carbono de {empresa || "tu empresa"} es</p>
         <h1 className="resultado-numero">
@@ -105,17 +52,17 @@ function Resultado({ datos, empresa, correo, giro }) {
         <p className="fuente resultado-fuente">Calculado con factores oficiales · {resultado.fuente}</p>
       </div>
 
-      <div className="impacto-metricas" aria-label="Metricas de impacto">
+      <div className="impacto-metricas" aria-label="Métricas de impacto">
         <div className="impacto-card">
           <span className="impacto-label">Vuelos CDMX-Madrid</span>
           <strong>{resultado.vuelos_equivalentes} vuelos</strong>
           <span>redondos de CDMX a Madrid equivalentes a las emisiones anuales estimadas.</span>
         </div>
         <div className="impacto-card">
-          <span className="impacto-label">Consumo electrico de oficina</span>
+          <span className="impacto-label">Consumo eléctrico de oficina</span>
           <strong>{resultado.oficina_estandar_meses} meses</strong>
           <span>
-            de electricidad para una oficina estandar en {paisElectricidad} con consumo de 700 kWh mensuales
+            de electricidad para una oficina estándar en {paisElectricidad} con consumo de 700 kWh mensuales
             {resultado.oficina_estandar_anios > 0 && ` (${resultado.oficina_estandar_anios} años)`}
           </span>
         </div>
@@ -123,7 +70,7 @@ function Resultado({ datos, empresa, correo, giro }) {
           <span className="impacto-label">Diesel equivalente</span>
           <strong>{resultado.tanques_pickup_diesel_equivalentes} tanques</strong>
           <span>
-            de 80 L equivalentes; reducir 15% la huella evitaria
+            de 80 L equivalentes; reducir 15% la huella evitaría
             {" "}{resultado.tanques_pickup_diesel_evitable_15} tanques de diesel.
           </span>
         </div>
@@ -164,21 +111,11 @@ function Resultado({ datos, empresa, correo, giro }) {
         </div>
       </div>
 
-      {infoRanking && (
-        <div className="ranking-card">
-          <span className="ranking-emoji">{infoRanking.emoji}</span>
-          <div>
-            <p className="ranking-mensaje">{infoRanking.mensaje}</p>
-            <p className="ranking-cta">{infoRanking.cta}</p>
-          </div>
-        </div>
-      )}
-
       <section className="oportunidades-card" aria-labelledby="oportunidades-title">
-        <h3 id="oportunidades-title">Oportunidades de Optimizacion y Reduccion</h3>
+        <h3 id="oportunidades-title">Oportunidades de Optimización y Reducción</h3>
         <div className="oportunidades-lista">
           <article className="oportunidad-item">
-            <h4>⚡ Optimizacion de Energia y Combustible</h4>
+            <h4>⚡ Optimización de Energía y Combustible</h4>
             <p>
               Gran parte de las emisiones de una empresa provienen del consumo diario de electricidad,
               gas y transporte. Mejorar la eficiencia operativa puede reducir costos y disminuir
@@ -186,27 +123,27 @@ function Resultado({ datos, empresa, correo, giro }) {
             </p>
           </article>
           <article className="oportunidad-item">
-            <h4>🔋 Modernizacion de Equipos y Procesos</h4>
+            <h4>🔋 Modernización de Equipos y Procesos</h4>
             <p>
-              Equipos mas eficientes, sistemas de refrigeracion modernos y procesos optimizados pueden
-              generar reducciones importantes de emisiones a largo plazo. La descarbonizacion tambien
+              Equipos más eficientes, sistemas de refrigeración modernos y procesos optimizados pueden
+              generar reducciones importantes de emisiones a largo plazo. La descarbonización también
               puede convertirse en una ventaja competitiva y operativa.
             </p>
           </article>
           <article className="oportunidad-item">
-            <h4>📦 Operaciones y Logistica Mas Inteligentes</h4>
+            <h4>📦 Operaciones y Logística Más Inteligentes</h4>
             <p>
               La forma en que una empresa compra, transporta y utiliza materiales tiene un impacto
               directo en sus emisiones. Optimizar rutas, reducir desperdicios y mejorar procesos puede
-              disminuir el impacto ambiental mientras fortalece la operacion del negocio.
+              disminuir el impacto ambiental mientras fortalece la operación del negocio.
             </p>
           </article>
         </div>
       </section>
 
       <p className="cta-copy">
-        Bono puede ayudarle a identificar oportunidades concretas de reduccion de emisiones y
-        optimizacion operativa, agenda una asesoria:
+        Bono puede ayudarle a identificar oportunidades concretas de reducción de emisiones y
+        optimización operativa, agenda una asesoría:
       </p>
       <a
         className="btn-cta"
@@ -215,13 +152,14 @@ function Resultado({ datos, empresa, correo, giro }) {
         rel="noopener noreferrer"
         onClick={() => registrarClickCalendly(correo)}
       >
-        Agenda una asesoria con Bono
+        Agenda una asesoría gratuita con Bono →
       </a>
 
       <div className="warning-estimacion">
-        ⚠️ Este resultado es una <strong>estimacion basada en IA</strong> con factores oficiales DEFRA 2025.
-        Para un calculo certificado y una ruta de descarbonizacion personalizada, agenda una asesoria con Bono.
+        ⚠️ Este resultado es una <strong>estimación basada en IA</strong> con factores oficiales DEFRA 2025.
+        Para un cálculo certificado y una ruta de descarbonización personalizada, agenda una asesoría con Bono.
       </div>
+
     </div>
   )
 }
