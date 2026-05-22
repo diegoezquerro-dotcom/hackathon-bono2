@@ -1,10 +1,12 @@
+import { useEffect, useState } from "react"
 import { calcularHuella } from "./calculos"
-import { registrarClickCalendly } from "./supabase"
+import { registrarClickCalendly, supabase } from "./supabase"
 
-function Resultado({ datos, empresa, correo }) {
+function Resultado({ datos, empresa, correo, giro }) {
   const resultado = calcularHuella(datos)
   const paisElectricidad = datos.pais || "el pais seleccionado"
   const totalAlcances = resultado.totalToneladas || 0
+  const [ranking, setRanking] = useState(null)
   const alcances = [
     {
       label: "Alcance 1 — Emisiones directas",
@@ -40,6 +42,71 @@ function Resultado({ datos, empresa, correo }) {
         .join(", ")
     : "#f1eff8 0% 100%"
 
+  useEffect(() => {
+    if (!giro || !resultado.totalToneladas) return
+
+    const calcularRanking = async () => {
+      const { data: leads, error } = await supabase
+        .from("leads")
+        .select("huella")
+        .eq("giro", giro)
+        .not("huella", "is", null)
+
+      if (error || !leads || leads.length < 2) {
+        setRanking(null)
+        return
+      }
+
+      const huellas = leads
+        .map((lead) => Number(lead.huella))
+        .filter((huella) => Number.isFinite(huella))
+        .sort((a, b) => a - b)
+
+      if (huellas.length < 2) {
+        setRanking(null)
+        return
+      }
+
+      const total = huellas.length
+      const posicion = huellas.filter((huella) => huella <= resultado.totalToneladas).length
+      const percentil = Math.max(0, Math.round((1 - posicion / total) * 100))
+
+      setRanking({ posicion, total, percentil })
+    }
+
+    calcularRanking()
+  }, [giro, resultado.totalToneladas])
+
+  const getMensajeRanking = () => {
+    if (!ranking) return null
+
+    const { percentil, posicion, total } = ranking
+
+    if (percentil <= 20) {
+      return {
+        emoji: "🏆",
+        mensaje: `Estás en el top ${percentil + 1}% de empresas más sustentables de tu sector.`,
+        cta: "Sigue así. Una asesoría con Bono puede llevarte al #1.",
+      }
+    }
+
+    if (percentil <= 50) {
+      return {
+        emoji: "📈",
+        mensaje: `Estás en el lugar ${posicion} de ${total} empresas de tu sector.`,
+        cta: "Estás en la mitad superior. Con Bono podrías entrar al top 20%.",
+      }
+    }
+
+    return {
+      emoji: "💡",
+      mensaje: `Hay ${total - posicion} empresas de tu sector con menor huella que tú.`,
+      cta: "Bono puede ayudarte a reducirla y mejorar tu posición.",
+    }
+  }
+
+  const infoRanking = getMensajeRanking()
+
   return (
     <div className="resultado-container">
 
@@ -51,6 +118,16 @@ function Resultado({ datos, empresa, correo }) {
         </h1>
         <p className="fuente resultado-fuente">Calculado con factores oficiales · {resultado.fuente}</p>
       </div>
+
+      {infoRanking && (
+        <div className="ranking-card">
+          <span className="ranking-emoji">{infoRanking.emoji}</span>
+          <div>
+            <p className="ranking-mensaje">{infoRanking.mensaje}</p>
+            <p className="ranking-cta">{infoRanking.cta}</p>
+          </div>
+        </div>
+      )}
 
       <div className="impacto-metricas" aria-label="Métricas de impacto">
         <div className="impacto-card">
