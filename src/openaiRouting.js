@@ -365,7 +365,6 @@ const signalStrategies = {
           "desconocido",
         ],
         unidad: [
-          "kg",
           "toneladas",
           "unidades",
           "mxn",
@@ -378,18 +377,15 @@ const signalStrategies = {
   residuos: {
     ask: {
       question:
-        "Que residuo generan mas: construccion/escombro, basura general, organico, electronicos, metal, plastico/papel u otro? Se recicla, composta o va a basura general?",
+        "Que residuo generan mas: construccion/escombro, basura general, organico, electronicos, metal, plastico/papel u otro? Si sabes, dime cuantas toneladas generan al mes.",
       fallback:
         "Si no tienes el dato, los residuos son bajos, medios o altos para su operacion?",
-      omit:
-        "Omitir open-loop, closed-loop, incineration with energy recovery y anaerobic digestion en la pregunta. Mapear internamente si hay informacion suficiente.",
     },
     extract: {
       targetFields: [
         "residuos.genera",
         "residuos.tipo",
-        "residuos.tratamiento",
-        "residuos.kg_mes",
+        "residuos.toneladas_mes",
         "residuos.descripcion",
         "residuos.intensidad",
       ],
@@ -402,12 +398,6 @@ const signalStrategies = {
           "metal",
           "plastico_papel",
           "otro",
-          "desconocido",
-        ],
-        tratamiento: [
-          "reciclaje",
-          "compostaje",
-          "relleno",
           "desconocido",
         ],
       },
@@ -483,6 +473,16 @@ export function obtenerSignalStrategies(rutaIndustria) {
   return signalOrder
     .map((signal) => [signal, signalStrategies[signal]])
     .filter(([, strategy]) => Boolean(strategy))
+}
+
+export function obtenerPreguntaInicial(industria) {
+  const rutaIndustria = obtenerIndustryRoute(industria)
+  const primeraSenal = rutaIndustria.prioritySignals[0]
+  const estrategia = signalStrategies[primeraSenal]
+
+  return estrategia?.ask?.question
+    ? `Listo. Empecemos con lo mas importante: ${estrategia.ask.question}`
+    : "Listo. Empecemos con lo mas importante: en su operacion diaria, la electricidad es un gasto bajo, medio o alto?"
 }
 
 export function formatearSignalStrategies(rutaIndustria) {
