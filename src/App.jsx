@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom"
+import { Analytics } from "@vercel/analytics/react";
 import logo from '../brand/assets/logos/transparent/bono-logo-original-large-transparent.png';
 import iconMitigation from '../brand/assets/optimized/dashboard-mitigation-projects.webp';
 import iconStrategy from '../brand/assets/optimized/strategy-analysis.webp';
@@ -362,6 +363,7 @@ export default function App() {
         <ResultsPreview />
         <FinalCta />
       </main>
+      <Analytics />
     </>
   );
 }
