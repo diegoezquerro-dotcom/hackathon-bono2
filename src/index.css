@@ -281,6 +281,17 @@ body {
   background: rgba(255, 255, 255, 0.92);
 }
 
+.warning-estimacion.chat-warning-estimacion {
+  margin: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-radius: 0;
+  padding: 12px 18px 14px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
 .input-texto {
   flex: 1;
   min-width: 0;
@@ -306,11 +317,6 @@ body {
 
 .input-texto::placeholder {
   color: #8b90a0;
-}
-
-.input-texto:disabled {
-  cursor: wait;
-  background: #f8f7fc;
 }
 
 .btn-enviar {
@@ -382,6 +388,50 @@ body {
   color: var(--calculator-muted);
   font-size: clamp(1.1rem, 2.5vw, 1.55rem);
   font-weight: 850;
+}
+
+.resultado-fuente {
+  margin-top: 18px;
+}
+
+.impacto-metricas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.impacto-card {
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid rgba(114, 67, 253, 0.16);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(246, 242, 255, 0.94), rgba(255, 255, 255, 0.96));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.045);
+}
+
+.impacto-label {
+  color: var(--bono-color-gradient-purple);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.impacto-card strong {
+  color: var(--calculator-ink);
+  font-size: clamp(1.55rem, 2.9vw, 2.1rem);
+  font-weight: 950;
+  line-height: 1;
+}
+
+.impacto-card span:last-child {
+  color: var(--calculator-muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1.38;
 }
 
 .equivalencias {
@@ -511,6 +561,35 @@ body {
   white-space: nowrap;
 }
 
+.alcances-descripciones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.alcance-descripcion {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--calculator-line);
+  border-radius: 14px;
+  background: #fbfaff;
+}
+
+.alcance-descripcion strong {
+  color: var(--calculator-ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.alcance-descripcion span {
+  color: var(--calculator-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .alcance-barra {
   height: 10px;
   margin-bottom: 16px;
@@ -525,11 +604,70 @@ body {
   transition: width 800ms ease;
 }
 
+.oportunidades-card {
+  display: grid;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid rgba(114, 67, 253, 0.16);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 96% 0%, rgba(114, 67, 253, 0.12), transparent 32%),
+    #ffffff;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.055);
+}
+
+.oportunidades-card h3 {
+  color: var(--calculator-ink);
+  font-size: clamp(1.25rem, 3vw, 1.85rem);
+  font-weight: 950;
+  line-height: 1.08;
+}
+
+.oportunidades-lista {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.oportunidad-item {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--calculator-line);
+  border-radius: 16px;
+  background: #fbfaff;
+}
+
+.oportunidad-item h4 {
+  color: var(--calculator-ink);
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.oportunidad-item p {
+  color: var(--calculator-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .fuente {
   color: #8b90a0;
   font-size: 0.82rem;
   font-weight: 700;
   text-align: center;
+}
+
+.cta-copy {
+  max-width: 760px;
+  margin: 0 auto -6px;
+  color: var(--calculator-ink);
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.55;
 }
 
 .btn-cta {
@@ -627,6 +765,11 @@ body {
     flex-direction: column;
   }
 
+  .warning-estimacion.chat-warning-estimacion {
+    padding: 10px 14px 12px;
+    font-size: 0.74rem;
+  }
+
   .input-texto,
   .btn-enviar {
     flex: 0 0 auto;
@@ -635,6 +778,7 @@ body {
   }
 }
 
+@media (max-width: 720px) {
   .resultado-container {
     padding-bottom: 22px;
   }
@@ -654,9 +798,27 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .impacto-metricas {
+    grid-template-columns: 1fr;
+  }
+
   .alcances {
     padding: 22px;
   }
+
+  .alcances-descripciones {
+    grid-template-columns: 1fr;
+  }
+
+  .oportunidades-card {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .oportunidades-lista {
+    grid-template-columns: 1fr;
+  }
+}
 
 .fuente {
   font-size: 12px;

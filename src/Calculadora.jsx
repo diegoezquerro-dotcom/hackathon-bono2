@@ -56,6 +56,8 @@ function Calculadora() {
     pais: "",
   })
   const mensajesRef = useRef(null)
+  const inputRef = useRef(null)
+  const mostrandoChat = fase !== "inicio" && fase !== "resultado"
   const perfilCompleto = Boolean(
     perfilEmpresa.industria && perfilEmpresa.empleados && perfilEmpresa.pais
   )
@@ -65,6 +67,18 @@ function Calculadora() {
       mensajesRef.current.scrollTop = mensajesRef.current.scrollHeight
     }
   }, [mensajes])
+
+  useEffect(() => {
+    if (fase === "resultado") {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }, [fase])
+
+  useEffect(() => {
+    if (!cargando && mostrandoChat) {
+      inputRef.current?.focus()
+    }
+  }, [cargando, mostrandoChat])
 
   const actualizarPerfil = (campo, valor) => {
     setPerfilEmpresa((perfilActual) => ({
@@ -91,6 +105,7 @@ function Calculadora() {
 
     const textoUsuario = input
     setInput("")
+    inputRef.current?.focus()
 
     const nuevosMensajes = [...mensajes, { tipo: "usuario", texto: textoUsuario }]
     setMensajes(nuevosMensajes)
@@ -254,7 +269,7 @@ function Calculadora() {
         </section>
       )}
 
-      {fase !== "inicio" && (
+      {mostrandoChat && (
         <div className="chat-container">
           <div className="mensajes" ref={mensajesRef}>
             {mensajes.map((msg, i) => (
@@ -280,17 +295,22 @@ function Calculadora() {
 
           <div className="input-area">
             <input
+              ref={inputRef}
               className="input-texto"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={cargando ? "B2 esta escribiendo..." : "Escribe tu respuesta..."}
-              disabled={cargando}
             />
             <button className="btn-enviar" onClick={enviarMensaje} disabled={cargando}>
               Enviar
             </button>
+          </div>
+
+          <div className="warning-estimacion chat-warning-estimacion">
+            ⚠️ Este resultado es una <strong>estimación basada en IA</strong> con factores oficiales DEFRA 2025.
+            Para un cálculo certificado y una ruta de descarbonización personalizada, agenda una asesoría con Bono.
           </div>
         </div>
       )}

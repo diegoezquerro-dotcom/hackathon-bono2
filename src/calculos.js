@@ -77,6 +77,10 @@ const PRECIO_KWH_MXN = 2.8
 const PRECIO_GAS_KWH_MXN = 1.2
 const PRECIO_AGUA_M3_MXN = 25
 const MESES_POR_ANIO = 12
+const OFICINA_ESTANDAR_KWH_MES = 700
+const DIESEL_KG_CO2E_POR_LITRO = 2.68
+const TANQUE_PICKUP_DIESEL_LITROS = 80
+const REDUCCION_DIESEL_EVITADA = 0.15
 
 // Supuestos MVP para convertir respuestas operativas a la unidad usada por los factores.
 const KWH_COMBUSTIBLE_POR_LITRO = 9.8
@@ -342,9 +346,10 @@ export function normalizarDatosOperativos(datos = {}, perfilEmpresa = {}) {
 }
 
 export function calcularHuella(datos) {
+  const factorElectricidad = factorElectricidadPorPais(datos.pais)
   // electricidad - convierte pesos a kwh si es necesario
   const kwh = (datos.kwh_mes || ((datos.luz_mxn_mes || 0) / PRECIO_KWH_MXN)) * MESES_POR_ANIO
-  const emisionesElectricidad = kwh * factorElectricidadPorPais(datos.pais)  // alcance 2
+  const emisionesElectricidad = kwh * factorElectricidad  // alcance 2
 
   // gas - convierte pesos a kwh
   const gasKwh = (datos.gas_kwh_mes || ((datos.gas_mxn_mes || 0) / PRECIO_GAS_KWH_MXN)) * MESES_POR_ANIO
@@ -379,12 +384,23 @@ export function calcularHuella(datos) {
 
   const totalKg = alcance1 + alcance2 + alcance3
   const totalToneladas = totalKg / 1000
+  const electricidadEquivalenteKwh = factorElectricidad > 0
+    ? totalKg / factorElectricidad
+    : 0
+  const oficinaEstandarMeses = electricidadEquivalenteKwh / OFICINA_ESTANDAR_KWH_MES
+  const dieselLitrosEquivalentes = totalKg / DIESEL_KG_CO2E_POR_LITRO
+  const tanquesPickupDiesel = dieselLitrosEquivalentes / TANQUE_PICKUP_DIESEL_LITROS
 
   return {
     totalToneladas: Math.round(totalToneladas * 10) / 10,
     alcance1: Math.round(alcance1 / 100) / 10,
     alcance2: Math.round(alcance2 / 100) / 10,
     alcance3: Math.round(alcance3 / 100) / 10,
+    electricidad_kwh_equivalentes: Math.round(electricidadEquivalenteKwh),
+    oficina_estandar_meses: Math.round(oficinaEstandarMeses),
+    oficina_estandar_anios: Math.round((oficinaEstandarMeses / MESES_POR_ANIO) * 10) / 10,
+    tanques_pickup_diesel_equivalentes: Math.round(tanquesPickupDiesel),
+    tanques_pickup_diesel_evitable_15: Math.round(tanquesPickupDiesel * REDUCCION_DIESEL_EVITADA),
     // equivalencias emocionales
     vuelos_equivalentes: Math.round(totalToneladas / 0.255),
     arboles_equivalentes: Math.round(totalToneladas * 45),
