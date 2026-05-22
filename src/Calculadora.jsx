@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react"
 import { chatConOpenAI } from "./openai"
 import Resultado from "./resultado"
 import { calcularHuella } from "./calculos"
-import { guardarLead } from "./leads"
 import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
+import { guardarLeadSupabase } from "./supabase"
 
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
@@ -90,7 +90,7 @@ function Calculadora() {
           }])
         } else {
           const resultado = calcularHuella(datos)
-          await guardarLead({
+          await guardarLeadSupabase({
             nombre: nombreUsuario,
             empresa: empresaUsuario,
             correo: textoUsuario,
