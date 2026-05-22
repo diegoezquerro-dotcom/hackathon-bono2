@@ -4,19 +4,19 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recha
 import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
 
 const COLORES = [
-  "#3001F7",
-  "#7243FD",
-  "#9B6FFF",
-  "#B89AFF",
-  "#4B0082",
-  "#6A0DAD",
-  "#1F7A8C",
-  "#00A878",
-  "#F59E0B",
-  "#EF4444",
-  "#64748B",
-  "#111827",
-  "#A855F7",
+  "#E63946", // rojo vivo
+  "#2196F3", // azul brillante
+  "#4CAF50", // verde
+  "#FF9800", // naranja
+  "#9C27B0", // morado
+  "#00BCD4", // cian
+  "#CDDC39", // lima
+  "#a262f0", // rosa
+  "#00897B", // verde azulado
+  "#FF5722", // naranja oscuro
+  "#3F51B5", // índigo
+  "#FFC107", // ámbar
+  "#FF4081", // magenta
 ]
 
 const INDUSTRIAS_CANONICAS = [
@@ -306,13 +306,13 @@ function Admin() {
               <h3>Usuarios por sector</h3>
               <p className="admin-chart-desc">Distribución de empresas que usaron la calculadora según su giro industrial.</p>
               {datosGrafica.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={500}>
                   <PieChart>
                     <Pie
                       data={datosGrafica}
                       cx="50%"
                       cy="50%"
-                      outerRadius={100}
+                      outerRadius={150}
                       dataKey="value"
                       label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                       labelLine={false}
