@@ -5,6 +5,17 @@ import { calcularHuella } from "./calculos"
 import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
 import { guardarLeadSupabase, iniciarSesion, completarSesion, registrarClickCalendly } from "./supabase"
 
+// preguntas fallback con sus ids para mapear respuestas
+const PREGUNTAS_FALLBACK = [
+  { id: "kwh_mes", texto: "¿Cuánto pagan de luz al mes aproximadamente? (en pesos está bien)", conversion: (r) => parseFloat(r) / 2.8 || 3000 },
+  { id: "gas_kwh_mes", texto: "¿Usan gas en sus instalaciones? ¿Cuánto pagan al mes? (si no usan, escribe 0)", conversion: (r) => parseFloat(r) / 1.2 || 0 },
+  { id: "vehiculos_km_mes", texto: "¿Cuántos vehículos tiene la empresa? (escribe el número)", conversion: (r) => (parseFloat(r) || 0) * 2000 },
+  { id: "vuelos_mes", texto: "¿Sus empleados viajan en avión por trabajo? ¿Cuántos viajes al mes aproximadamente? (si no, escribe 0)", conversion: (r) => parseFloat(r) || 0 },
+  { id: "empleados_km_mes", texto: "¿La mayoría de empleados llega en coche o transporte público? (escribe cuántos en coche)", conversion: (r) => (parseFloat(r) || 0) * 20 * 22 },
+  { id: "residuos_kg_mes", texto: "¿Cuánta basura genera la empresa? (una bolsa al día = 5, un contenedor a la semana = 500)", conversion: (r) => parseFloat(r) || 100 },
+  { id: "agua_m3_mes", texto: "¿Consumen agua de forma significativa? ¿Cuántos m³ al mes aproximadamente? (si no sabes, escribe 0)", conversion: (r) => parseFloat(r) || 0 },
+]
+
 function Calculadora() {
   const [mensajes, setMensajes] = useState([
     { tipo: "bot", texto: "Hola, soy B2 👋 El asistente de Bono que te ayudará a conocer el impacto de carbono de tu empresa. ¿Con quién tengo el gusto? (nombre y apellido)" }
@@ -17,6 +28,9 @@ function Calculadora() {
   const [empresaUsuario, setEmpresaUsuario] = useState("")
   const [giroUsuario, setGiroUsuario] = useState("")
   const [correoUsuario, setCorreoUsuario] = useState("")
+  const [fallbackIndex, setFallbackIndex] = useState(0)
+  const [respuestasFallback, setRespuestasFallback] = useState({})
+  const [enFallback, setEnFallback] = useState(false)
   const mensajesRef = useRef(null)
 
   useEffect(() => {
@@ -24,6 +38,31 @@ function Calculadora() {
       mensajesRef.current.scrollTop = mensajesRef.current.scrollHeight
     }
   }, [mensajes])
+
+  const procesarFallback = (textoUsuario, nuevosMensajes, indexActual, respuestasActuales) => {
+    const preguntaActual = PREGUNTAS_FALLBACK[indexActual]
+    const valorConvertido = preguntaActual.conversion(textoUsuario)
+    const nuevasRespuestas = { ...respuestasActuales, [preguntaActual.id]: valorConvertido }
+    setRespuestasFallback(nuevasRespuestas)
+
+    const siguienteIndex = indexActual + 1
+
+    if (siguienteIndex < PREGUNTAS_FALLBACK.length) {
+      setFallbackIndex(siguienteIndex)
+      setMensajes([...nuevosMensajes, {
+        tipo: "bot",
+        texto: PREGUNTAS_FALLBACK[siguienteIndex].texto
+      }])
+    } else {
+      // todas las preguntas respondidas, calcula con datos reales del usuario
+      setDatos(nuevasRespuestas)
+      setFase("muro_empresa")
+      setMensajes([...nuevosMensajes, {
+        tipo: "bot",
+        texto: `¡Listo ${nombreUsuario}! Tu estimación está lista 🎉 ¿A nombre de qué empresa genero el reporte?`
+      }])
+    }
+  }
 
   const enviarMensaje = async () => {
     if (!input.trim() || cargando) return
@@ -36,6 +75,13 @@ function Calculadora() {
     setCargando(true)
 
     try {
+      // si estamos en fallback Y no estamos en el muro, procesar fallback
+      if (enFallback && fase === "chat") {
+        procesarFallback(textoUsuario, nuevosMensajes, fallbackIndex, respuestasFallback)
+        setCargando(false)
+        return
+      }
+
       if (fase === "nombre") {
         setNombreUsuario(textoUsuario)
         setFase("sector")
@@ -106,40 +152,18 @@ function Calculadora() {
     } catch (error) {
       console.log("ERROR:", error)
 
-      const preguntasFallback = [
-        "¿Cuánto pagan de luz al mes aproximadamente? (en pesos está bien)",
-        "¿Usan gas en sus instalaciones? ¿Cuánto pagan al mes?",
-        "¿Cuántos vehículos tiene la empresa?",
-        "¿Sus empleados viajan en avión por trabajo? ¿Cuántos viajes al mes?",
-        "¿La mayoría de empleados llega en coche o transporte público?",
-        "¿Cuánta basura genera la empresa? (una bolsa al día, un contenedor a la semana...)",
-        "¿Consumen agua de forma significativa en su proceso productivo?",
-      ]
-
-      if (!window._fallbackIndex) window._fallbackIndex = 0
-
-      if (window._fallbackIndex < preguntasFallback.length) {
+      // activa fallback y empieza desde donde quedó
+      if (!enFallback) {
+        setEnFallback(true)
+        setFallbackIndex(0)
+        setRespuestasFallback({})
         setMensajes([...nuevosMensajes, {
           tipo: "bot",
-          texto: preguntasFallback[window._fallbackIndex]
+          texto: `Continuemos. ${PREGUNTAS_FALLBACK[0].texto}`
         }])
-        window._fallbackIndex++
       } else {
-        setDatos({
-          kwh_mes: 5000,
-          vehiculos_km_mes: 6000,
-          gas_kwh_mes: 2000,
-          residuos_kg_mes: 200,
-          vuelos_mes: 2,
-          empleados_km_mes: 3000,
-          agua_m3_mes: 50
-        })
-        setFase("muro_empresa")
-        setMensajes([...nuevosMensajes, {
-          tipo: "bot",
-          texto: `¡Listo ${nombreUsuario}! Tu estimación está lista 🎉 ¿A nombre de qué empresa genero el reporte?`
-        }])
-        window._fallbackIndex = 0
+        // ya estaba en fallback y fallo de nuevo, intenta procesar igual
+        procesarFallback(textoUsuario, nuevosMensajes, fallbackIndex, respuestasFallback)
       }
     }
 

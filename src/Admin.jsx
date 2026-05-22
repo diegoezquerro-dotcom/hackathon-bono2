@@ -8,7 +8,9 @@ function Admin() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [autenticado, setAutenticado] = useState(false)
+  const [autenticado, setAutenticado] = useState(
+    sessionStorage.getItem("adminAuth") === "true"
+  )
   const [tabActual, setTabActual] = useState("dashboard")
   const [leads, setLeads] = useState([])
   const [sesiones, setSesiones] = useState([])
@@ -31,8 +33,8 @@ function Admin() {
       return
     }
 
+    sessionStorage.setItem("adminAuth", "true")
     setAutenticado(true)
-    cargarDatos()
   }
 
   const cargarDatos = async () => {
@@ -53,6 +55,24 @@ function Admin() {
     setCargando(false)
   }
 
+  // carga datos al autenticarse y cada 30 segundos
+  useEffect(() => {
+    if (!autenticado) return
+
+    cargarDatos()
+
+    const intervalo = setInterval(() => {
+      cargarDatos()
+    }, 30000)
+
+    return () => clearInterval(intervalo)
+  }, [autenticado])
+
+  const cerrarSesion = () => {
+    sessionStorage.removeItem("adminAuth")
+    setAutenticado(false)
+  }
+
   // metricas calculadas
   const totalUsuarios = sesiones.filter(s => s.completo).length
   const tiempoPromedio = sesiones.length
@@ -60,7 +80,6 @@ function Admin() {
     : 0
   const clicksCalendly = leads.filter(l => l.clicks_calendly).length
 
-  // datos para grafica de pastel por giro
   const giroCount = leads.reduce((acc, lead) => {
     const giro = lead.giro || "Sin especificar"
     acc[giro] = (acc[giro] || 0) + 1
@@ -68,7 +87,6 @@ function Admin() {
   }, {})
   const datosGrafica = Object.entries(giroCount).map(([name, value]) => ({ name, value }))
 
-  // clicks por giro
   const clicksPorGiro = leads
     .filter(l => l.clicks_calendly)
     .reduce((acc, lead) => {
@@ -77,12 +95,10 @@ function Admin() {
       return acc
     }, {})
 
-  // leads filtrados para tab 3
   const leadsFiltrados = filtroGiro
     ? leads.filter(l => l.giro?.toLowerCase().includes(filtroGiro.toLowerCase()))
     : leads
 
-  // giros unicos para el filtro
   const girosUnicos = [...new Set(leads.map(l => l.giro).filter(Boolean))]
 
   if (!autenticado) {
@@ -123,18 +139,13 @@ function Admin() {
   return (
     <div className="admin-shell">
 
-      {/* header admin */}
       <div className="admin-header">
         <div className="logo-texto">bono₂ Admin</div>
-        <button
-          className="admin-logout"
-          onClick={() => setAutenticado(false)}
-        >
+        <button className="admin-logout" onClick={cerrarSesion}>
           Cerrar sesión
         </button>
       </div>
 
-      {/* tabs */}
       <div className="admin-tabs">
         <button
           className={`admin-tab ${tabActual === "dashboard" ? "active" : ""}`}
@@ -160,12 +171,10 @@ function Admin() {
 
         {cargando && <p style={{ color: "#888", textAlign: "center" }}>Cargando datos...</p>}
 
-        {/* TAB 1 - DASHBOARD */}
         {tabActual === "dashboard" && !cargando && (
           <div className="admin-dashboard">
             <p className="admin-tab-desc">Resumen general de uso de la calculadora y métricas clave.</p>
 
-            {/* metricas */}
             <div className="admin-metricas">
               <div className="metrica-card">
                 <span className="metrica-numero">{totalUsuarios}</span>
@@ -181,7 +190,6 @@ function Admin() {
               </div>
             </div>
 
-            {/* grafica de pastel */}
             <div className="admin-chart-card">
               <h3>Usuarios por sector</h3>
               <p className="admin-chart-desc">Distribución de empresas que usaron la calculadora según su giro industrial.</p>
@@ -209,7 +217,6 @@ function Admin() {
               )}
             </div>
 
-            {/* clicks por giro */}
             <div className="admin-chart-card">
               <h3>Clicks en Calendly por sector</h3>
               <p className="admin-chart-desc">
@@ -231,7 +238,6 @@ function Admin() {
           </div>
         )}
 
-        {/* TAB 2 - LEADS CALIENTES */}
         {tabActual === "calendly" && !cargando && (
           <div>
             <p className="admin-tab-desc">Empresas que hicieron click en Calendly — son las más interesadas en contratar a Bono.</p>
@@ -272,12 +278,10 @@ function Admin() {
           </div>
         )}
 
-        {/* TAB 3 - TODOS LOS LEADS */}
         {tabActual === "todos" && !cargando && (
           <div>
             <p className="admin-tab-desc">Todos los leads capturados. Filtra por giro para encontrar empresas específicas.</p>
 
-            {/* filtro */}
             <div className="admin-filtro">
               <select
                 className="input-texto"
