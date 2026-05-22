@@ -60,7 +60,8 @@ function Resultado({ datos, nombre, empresa, correo }) {
       <p className="fuente">Calculado con factores oficiales · {resultado.fuente}</p>
 
       <div className="warning-estimacion">
-        ⚠️ Este resultado es una <strong>estimación basada en IA</strong> con factores oficiales DEFRA 2025. Para un cálculo certificado y una ruta de descarbonización personalizada, agenda una asesoría con Bono.
+        ⚠️ Este resultado es una <strong>estimación basada en IA</strong> con factores oficiales DEFRA 2025.
+        Para un cálculo certificado y una ruta de descarbonización personalizada, agenda una asesoría con Bono.
       </div>
 
       <a
