@@ -96,10 +96,10 @@ function Resultado({ datos, empresa, correo, giro }) {
         </h1>
       </div>
 
-      <div className="warning-estimacion">
-        ⚠️ Este resultado es una <strong>estimación basada en IA</strong> con factores oficiales DEFRA 2025.
-        Para un cálculo certificado y una ruta de descarbonización personalizada, agenda una asesoría con Bono.
-      </div>     
+      <p className="fuente">
+        ⚠️ <i>Este resultado es una estimación basada en IA con factores oficiales DEFRA 2025. <br></br>
+        No es equivalente a un cálculo certificado o una ruta de descarbonización personalizada,</i>
+      </p>     
 
       <div className="equivalencias">
         <div className="equivalencia-card">
