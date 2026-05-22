@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react"
 import { chatConOpenAI } from "./openai"
 import { normalizarDatosOperativos, calcularHuella } from "./calculos"
+import { obtenerPreguntaInicial } from "./openaiRouting"
 import Resultado from "./resultado"
 import logo from "../brand/assets/logos/transparent/bono-logo-original-large-transparent.png"
 import { guardarLeadSupabase, iniciarSesion, completarSesion } from "./supabase"
@@ -40,36 +41,6 @@ const paises = [
   "Otro pais LATAM",
 ]
 
-function preguntaInicial(perfilEmpresa) {
-  const industria = perfilEmpresa.industria.toLowerCase()
-
-  if (industria.includes("alimentos") || industria.includes("restaurantes")) {
-    return "Listo. Empecemos con lo mas importante: en su operacion diaria, usan refrigeracion, cocina con gas, o ambas?"
-  }
-
-  if (industria.includes("transporte")) {
-    return "Listo. Empecemos con lo mas importante: cuantos vehiculos operan y que tan seguido se usan?"
-  }
-
-  if (industria.includes("distribucion") || industria.includes("almacenamiento")) {
-    return "Listo. Empecemos con lo mas importante: usan vehiculos, montacargas o refrigeracion en el almacen?"
-  }
-
-  if (industria.includes("retail") || industria.includes("comercio")) {
-    return "Listo. Empecemos con lo mas importante: operan tiendas fisicas, ecommerce, o ambos?"
-  }
-
-  if (industria.includes("manufactura") || industria.includes("textil")) {
-    return "Listo. Empecemos con lo mas importante: que tan intensivo es el uso de maquinaria o electricidad en su operacion?"
-  }
-
-  if (industria.includes("oficinas") || industria.includes("servicios")) {
-    return "Listo. Empecemos con lo mas importante: su oficina usa poca, media o mucha electricidad al mes?"
-  }
-
-  return "Listo. Empecemos con lo mas importante: en su operacion diaria, la electricidad es un gasto bajo, medio o alto?"
-}
-
 function Calculadora() {
   const [mensajes, setMensajes] = useState([])
   const [input, setInput] = useState("")
@@ -106,7 +77,7 @@ function Calculadora() {
     if (!perfilCompleto) return
 
     setFase("chat")
-    setMensajes([{ tipo: "bot", texto: preguntaInicial(perfilEmpresa) }])
+    setMensajes([{ tipo: "bot", texto: obtenerPreguntaInicial(perfilEmpresa.industria) }])
 
     try {
       await iniciarSesion(perfilEmpresa.industria)

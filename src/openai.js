@@ -31,8 +31,8 @@ export async function chatConOpenAI(historial, mensajeUsuario, perfilEmpresa) {
   logAgentDebug("request", {
     selectedIndustry: debugLocal.selectedIndustry,
     questionCount: debugLocal.questionCount,
-    coveredSignals: debugLocal.coveredSignalsEstimate,
-    nextSignal: debugLocal.nextSignalEstimate,
+    coveredSignals: debugLocal.coveredSignals,
+    nextSignal: debugLocal.nextSignal,
     perfilEmpresa,
     historial,
     mensajeUsuario,
@@ -64,8 +64,8 @@ export async function chatConOpenAI(historial, mensajeUsuario, perfilEmpresa) {
     logAgentDebug("error response body", {
       selectedIndustry: debugLocal.selectedIndustry,
       questionCount: debugLocal.questionCount,
-      coveredSignals: debugLocal.coveredSignalsEstimate,
-      nextSignal: debugLocal.nextSignalEstimate,
+      coveredSignals: debugLocal.coveredSignals,
+      nextSignal: debugLocal.nextSignal,
       errorText,
     })
     throw new Error(`OpenAI API error ${response.status}: ${errorText}`)
@@ -77,8 +77,8 @@ export async function chatConOpenAI(historial, mensajeUsuario, perfilEmpresa) {
   logAgentDebug("raw output", {
     selectedIndustry: debugLocal.selectedIndustry,
     questionCount: debugLocal.questionCount,
-    coveredSignals: debugLocal.coveredSignalsEstimate,
-    nextSignal: debugLocal.nextSignalEstimate,
+    coveredSignals: debugLocal.coveredSignals,
+    nextSignal: debugLocal.nextSignal,
     data,
     texto,
   })
@@ -92,8 +92,8 @@ export async function chatConOpenAI(historial, mensajeUsuario, perfilEmpresa) {
   logAgentDebug("parsed output", {
     selectedIndustry: json?.debug?.selectedIndustry ?? debugLocal.selectedIndustry,
     questionCount: json?.debug?.questionCount ?? debugLocal.questionCount,
-    coveredSignals: json?.debug?.coveredSignals ?? debugLocal.coveredSignalsEstimate,
-    nextSignal: json?.debug?.nextSignal ?? debugLocal.nextSignalEstimate,
+    coveredSignals: json?.debug?.coveredSignals ?? debugLocal.coveredSignals,
+    nextSignal: json?.debug?.nextSignal ?? debugLocal.nextSignal,
     json,
   })
 
@@ -102,8 +102,8 @@ export async function chatConOpenAI(historial, mensajeUsuario, perfilEmpresa) {
     logAgentDebug("return", {
       selectedIndustry: debugLocal.selectedIndustry,
       questionCount: debugLocal.questionCount,
-      coveredSignals: debugLocal.coveredSignalsEstimate,
-      nextSignal: debugLocal.nextSignalEstimate,
+      coveredSignals: debugLocal.coveredSignals,
+      nextSignal: debugLocal.nextSignal,
       salida,
     })
     return salida

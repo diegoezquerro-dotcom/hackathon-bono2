@@ -118,7 +118,7 @@ export const RESPUESTA_SCHEMA = {
             cantidad_mensual: { type: ["number", "null"] },
             unidad: {
               type: ["string", "null"],
-              enum: ["kg", "toneladas", "unidades", "mxn", "desconocido", null],
+              enum: ["toneladas", "unidades", "mxn", "desconocido", null],
             },
             intensidad: { type: ["string", "null"], enum: ["baja", "media", "alta", null] },
           },
@@ -150,15 +150,11 @@ export const RESPUESTA_SCHEMA = {
                 null,
               ],
             },
-            tratamiento: {
-              type: ["string", "null"],
-              enum: ["reciclaje", "compostaje", "relleno", "desconocido", null],
-            },
-            kg_mes: { type: ["number", "null"] },
+            toneladas_mes: { type: ["number", "null"] },
             descripcion: { type: ["string", "null"] },
             intensidad: { type: ["string", "null"], enum: ["baja", "media", "alta", null] },
           },
-          required: ["genera", "tipo", "tratamiento", "kg_mes", "descripcion", "intensidad"],
+          required: ["genera", "tipo", "toneladas_mes", "descripcion", "intensidad"],
         },
         viajes: {
           type: "object",

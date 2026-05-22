@@ -4,6 +4,35 @@ import { registrarClickCalendly, supabase } from "./supabase"
 
 function Resultado({ datos, empresa, correo, giro }) {
   const resultado = calcularHuella(datos)
+  const totalAlcances = resultado.totalToneladas || 0
+  const alcances = [
+    {
+      label: "Alcance 1 — Emisiones directas",
+      value: resultado.alcance1,
+      color: "#3001F7",
+    },
+    {
+      label: "Alcance 2 — Electricidad",
+      value: resultado.alcance2,
+      color: "#7243FD",
+    },
+    {
+      label: "Alcance 3 — Cadena de valor",
+      value: resultado.alcance3,
+      color: "#9B6FFF",
+    },
+  ]
+  let pieStart = 0
+  const pieGradient = totalAlcances > 0
+    ? alcances
+        .map((alcance) => {
+          const start = pieStart
+          const end = start + (alcance.value / totalAlcances) * 100
+          pieStart = end
+          return `${alcance.color} ${start}% ${end}%`
+        })
+        .join(", ")
+    : "#f1eff8 0% 100%"
   const [ranking, setRanking] = useState(null)
 
   useEffect(() => {
@@ -67,16 +96,10 @@ function Resultado({ datos, empresa, correo, giro }) {
         </h1>
       </div>
 
-      {/* ranking */}
-      {infoRanking && (
-        <div className="ranking-card">
-          <span className="ranking-emoji">{infoRanking.emoji}</span>
-          <div>
-            <p className="ranking-mensaje">{infoRanking.mensaje}</p>
-            <p className="ranking-cta">{infoRanking.cta}</p>
-          </div>
-        </div>
-      )}
+      <div className="warning-estimacion">
+        ⚠️ Este resultado es una <strong>estimación basada en IA</strong> con factores oficiales DEFRA 2025.
+        Para un cálculo certificado y una ruta de descarbonización personalizada, agenda una asesoría con Bono.
+      </div>     
 
       <div className="equivalencias">
         <div className="equivalencia-card">
@@ -95,33 +118,41 @@ function Resultado({ datos, empresa, correo, giro }) {
 
       <div className="alcances">
         <h3 className="alcances-titulo">Desglose por alcance</h3>
-        <div className="alcance-row">
-          <span className="alcance-label">Alcance 1 — Emisiones directas</span>
-          <span className="alcance-valor">{resultado.alcance1} t</span>
-        </div>
-        <div className="alcance-barra">
-          <div className="alcance-barra-fill" style={{ width: `${(resultado.alcance1 / resultado.totalToneladas) * 100}%`, background: "#3001F7" }} />
-        </div>
-        <div className="alcance-row">
-          <span className="alcance-label">Alcance 2 — Electricidad</span>
-          <span className="alcance-valor">{resultado.alcance2} t</span>
-        </div>
-        <div className="alcance-barra">
-          <div className="alcance-barra-fill" style={{ width: `${(resultado.alcance2 / resultado.totalToneladas) * 100}%`, background: "#7243FD" }} />
-        </div>
-        <div className="alcance-row">
-          <span className="alcance-label">Alcance 3 — Cadena de valor</span>
-          <span className="alcance-valor">{resultado.alcance3} t</span>
-        </div>
-        <div className="alcance-barra">
-          <div className="alcance-barra-fill" style={{ width: `${(resultado.alcance3 / resultado.totalToneladas) * 100}%`, background: "#9B6FFF" }} />
+        <div className="alcances-chart">
+          <div
+            className="alcances-pie"
+            style={{ background: `conic-gradient(${pieGradient})` }}
+            role="img"
+            aria-label={`Desglose por alcance: Alcance 1 ${resultado.alcance1} toneladas, Alcance 2 ${resultado.alcance2} toneladas, Alcance 3 ${resultado.alcance3} toneladas`}
+          >
+            <span>{resultado.totalToneladas} t</span>
+          </div>
+
+          <div className="alcances-lista">
+            {alcances.map((alcance) => (
+              <div className="alcance-row" key={alcance.label}>
+                <span className="alcance-label">
+                  <span className="alcance-color" style={{ background: alcance.color }} />
+                  {alcance.label}
+                </span>
+                <span className="alcance-valor">{alcance.value} t</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="warning-estimacion">
-        ⚠️ Este resultado es una <strong>estimación basada en IA</strong> con factores oficiales DEFRA 2025.
-        Para un cálculo certificado y una ruta de descarbonización personalizada, agenda una asesoría con Bono.
-      </div>
+       {/* ranking */}
+      {infoRanking && (
+        <div className="ranking-card">
+          <span className="ranking-emoji">{infoRanking.emoji}</span>
+          <div>
+            <p className="ranking-mensaje">{infoRanking.mensaje}</p>
+            <p className="ranking-cta">{infoRanking.cta}</p>
+          </div>
+        </div>
+      )}
+      
 
       <a
         className="btn-cta"

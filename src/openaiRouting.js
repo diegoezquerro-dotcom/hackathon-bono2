@@ -365,7 +365,6 @@ const signalStrategies = {
           "desconocido",
         ],
         unidad: [
-          "kg",
           "toneladas",
           "unidades",
           "mxn",
@@ -388,8 +387,7 @@ const signalStrategies = {
       targetFields: [
         "residuos.genera",
         "residuos.tipo",
-        "residuos.tratamiento",
-        "residuos.kg_mes",
+        "residuos.toneladas_mes",
         "residuos.descripcion",
         "residuos.intensidad",
       ],
@@ -402,12 +400,6 @@ const signalStrategies = {
           "metal",
           "plastico_papel",
           "otro",
-          "desconocido",
-        ],
-        tratamiento: [
-          "reciclaje",
-          "compostaje",
-          "relleno",
           "desconocido",
         ],
       },
@@ -483,6 +475,16 @@ export function obtenerSignalStrategies(rutaIndustria) {
   return signalOrder
     .map((signal) => [signal, signalStrategies[signal]])
     .filter(([, strategy]) => Boolean(strategy))
+}
+
+export function obtenerPreguntaInicial(industria) {
+  const rutaIndustria = obtenerIndustryRoute(industria)
+  const primeraSenal = rutaIndustria.prioritySignals[0]
+  const estrategia = signalStrategies[primeraSenal]
+
+  return estrategia?.ask?.question
+    ? `Listo. Empecemos con lo mas importante: ${estrategia.ask.question}`
+    : "Listo. Empecemos con lo mas importante: en su operacion diaria, la electricidad es un gasto bajo, medio o alto?"
 }
 
 export function formatearSignalStrategies(rutaIndustria) {

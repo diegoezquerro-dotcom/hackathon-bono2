@@ -34,7 +34,8 @@ const FACTORES = {
     desconocido: 0.17174,
   },
 
-  materiales_kg_co2e_por_kg: {
+  // alcance 3 - materiales comprados (kg CO2e por tonelada de material)
+  materiales_kg_co2e_por_tonelada: {
     construccion: 269.50416,
     organico: 114.90473,
     electrico_electronico: 4633.47826,
@@ -232,41 +233,40 @@ function estimarMaterialesKgCo2e(datos) {
   const materiales = datos.materiales || {}
   const categorias = materiales.categorias?.length ? materiales.categorias : ["desconocido"]
 
-  let kgMateriales = 0
+  let toneladasMateriales = 0
   if (numeroValido(materiales.cantidad_mensual)) {
-    if (materiales.unidad === "kg") kgMateriales = materiales.cantidad_mensual
-    if (materiales.unidad === "toneladas") kgMateriales = materiales.cantidad_mensual * 1000
+    if (materiales.unidad === "toneladas") toneladasMateriales = materiales.cantidad_mensual
   }
 
-  if (!kgMateriales) {
-    kgMateriales = {
-      baja: 100,
-      media: 500,
-      alta: 1500,
+  if (!toneladasMateriales) {
+    toneladasMateriales = {
+      baja: 0.1,
+      media: 0.5,
+      alta: 1.5,
     }[nivelFemenino(materiales.intensidad)] || 0
   }
 
-  if (!kgMateriales) return 0
+  if (!toneladasMateriales) return 0
 
   const factorPromedio = categorias.reduce((total, categoriaMaterial) => {
-    const factor = FACTORES.materiales_kg_co2e_por_kg[categoria(categoriaMaterial)]
-      || FACTORES.materiales_kg_co2e_por_kg.desconocido
+    const factor = FACTORES.materiales_kg_co2e_por_tonelada[categoria(categoriaMaterial)]
+      || FACTORES.materiales_kg_co2e_por_tonelada.desconocido
     return total + factor
   }, 0) / categorias.length
 
-  return kgMateriales * factorPromedio
+  return toneladasMateriales * factorPromedio
 }
 
-function estimarResiduosKg(datos) {
+function estimarResiduosToneladas(datos) {
   const residuos = datos.residuos || {}
 
   if (residuos.genera === false) return 0
-  if (numeroValido(residuos.kg_mes)) return residuos.kg_mes
+  if (numeroValido(residuos.toneladas_mes)) return residuos.toneladas_mes
 
   return {
-    baja: 100,
-    media: 500,
-    alta: 1500,
+    baja: 0.1,
+    media: 0.5,
+    alta: 1.5,
   }[nivelFemenino(residuos.intensidad)] || 0
 }
 
@@ -331,7 +331,7 @@ export function normalizarDatosOperativos(datos = {}, perfilEmpresa = {}) {
     gas_kwh_mes: estimarCombustiblesKwh(diagnostico),
     combustible_factor_kg_kwh: factorCombustibleKwh(diagnostico),
     vehiculo_factor_kg_km: factorVehiculoKm(diagnostico.vehiculos?.tipo),
-    residuos_kg_mes: estimarResiduosKg(diagnostico),
+    residuos_toneladas_mes: estimarResiduosToneladas(diagnostico),
     residuos_factor_kg_tonelada: factorResiduosTonelada(diagnostico),
     materiales_kg_co2e_mes: estimarMaterialesKgCo2e(diagnostico),
     vuelos_mes: estimarVuelosMes(diagnostico),
@@ -354,9 +354,9 @@ export function calcularHuella(datos) {
   const vehiculosKm = (datos.vehiculos_km_mes || 0) * MESES_POR_ANIO
   const emisionesVehiculos = vehiculosKm * (datos.vehiculo_factor_kg_km || FACTORES.vehiculo_km)  // alcance 1
 
-  // residuos - convierte kg a toneladas
-  const residuosKg = (datos.residuos_kg_mes || 0) * MESES_POR_ANIO
-  const emisionesResiduos = (residuosKg / 1000) * (datos.residuos_factor_kg_tonelada || FACTORES.residuos_tonelada)  // alcance 3
+  // residuos
+  const residuosToneladas = (datos.residuos_toneladas_mes || 0) * MESES_POR_ANIO
+  const emisionesResiduos = residuosToneladas * (datos.residuos_factor_kg_tonelada || FACTORES.residuos_tonelada)  // alcance 3
 
   const emisionesMateriales = (datos.materiales_kg_co2e_mes || 0) * MESES_POR_ANIO
 

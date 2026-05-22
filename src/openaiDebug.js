@@ -10,16 +10,12 @@ function contarPreguntasOperativas(historial, mensajeUsuario) {
 export function crearDebugLocal(historial, mensajeUsuario, perfilEmpresa = {}) {
   const rutaIndustria = obtenerIndustryRoute(perfilEmpresa.industria)
   const questionCount = contarPreguntasOperativas(historial, mensajeUsuario)
-  const orderedSignals = [
-    ...rutaIndustria.prioritySignals,
-    ...rutaIndustria.secondarySignals,
-  ]
 
   return {
     questionCount,
-    coveredSignalsEstimate: orderedSignals.slice(0, Math.max(0, questionCount - 1)),
     selectedIndustry: perfilEmpresa.industria || null,
-    nextSignalEstimate: orderedSignals[questionCount - 1] || null,
+    coveredSignals: null,
+    nextSignal: null,
     industryRoute: rutaIndustria,
     selectedSignalStrategies: obtenerSignalStrategies(rutaIndustria).map(([signal, strategy]) => ({
       signal,
