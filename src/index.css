@@ -544,3 +544,28 @@ a.btn-cta {
   text-align: center;
   text-decoration: none;
 }
+
+.admin-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-login-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-error {
+  color: #ff4444;
+  font-size: 13px;
+  margin-top: 8px;
+  text-align: center;
+}

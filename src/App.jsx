@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom"
 import logo from '../brand/assets/logos/transparent/bono-logo-original-large-transparent.png';
 import iconMitigation from '../brand/assets/optimized/dashboard-mitigation-projects.webp';
 import iconStrategy from '../brand/assets/optimized/strategy-analysis.webp';
@@ -341,7 +342,9 @@ function FinalCta() {
 }
 
 export default function App() {
-  if (window.location.pathname === calculatorHref) {
+  const location = useLocation()
+
+  if (location.pathname === calculatorHref) {
     return <Calculadora />;
   }
 
